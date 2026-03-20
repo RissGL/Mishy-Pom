@@ -8,11 +8,11 @@ public class MishyPreviewQueue : MonoBehaviour
     [SerializeField] private int reviewCount=10;
     private Queue<MishyType> nextMishies = new Queue<MishyType>();
 
-    public event EventHandler<twoMishy> OnNextMishyNeedSpawn;
+    public event EventHandler<MishyPairEventArgs> OnNextMishyNeedSpawn;
 
-    public class twoMishy : EventArgs
+    public class MishyPairEventArgs : EventArgs
     {
-        public twoMishy(MishyType type_one, MishyType type_two)
+        public MishyPairEventArgs(MishyType type_one, MishyType type_two)
         {
             this.type_one = type_one;
             this.type_two = type_two;
@@ -34,7 +34,7 @@ public class MishyPreviewQueue : MonoBehaviour
 
     public void DequeueNextMishy() 
     {
-        twoMishy twoMishy = new twoMishy(nextMishies.Dequeue(),nextMishies.Dequeue());
+        MishyPairEventArgs twoMishy = new MishyPairEventArgs(nextMishies.Dequeue(),nextMishies.Dequeue());
 
         for (int i = 0; i < 2; i++) 
         {

@@ -22,7 +22,7 @@ public struct GridPosition : IEquatable<GridPosition>
 
     public override string ToString()
     {
-        return $"X:{x}, Z:{y}";
+        return $"X:{x}, Y:{y}";
     }
 
     public static GridPosition operator +(GridPosition a,GridPosition b)

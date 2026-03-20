@@ -13,6 +13,7 @@ public class MishyManager : MonoBehaviour
     [SerializeField] private MishyPreviewQueue mishyPreviewQueue;
 
     [SerializeField] private GridPosition SpawnGridPositionDown;
+    [SerializeField] private MishyPlayerController mishyPlayerController;
     private GridPosition SpawnGridPositionUp;
 
     private void Awake()
@@ -31,13 +32,22 @@ public class MishyManager : MonoBehaviour
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
         SpawnGridPositionUp=new GridPosition(SpawnGridPositionDown.x,SpawnGridPositionDown.y+1);
+        StartCoroutine(AsyncSpawnFirstMishyPair());
+        //TODO:改成等待玩家确定后再生成第一个
+    }
+
+    private IEnumerator AsyncSpawnFirstMishyPair() 
+    {
+        yield return null;
         mishyPreviewQueue.DequeueNextMishy();
     }
 
-    private void MishyPreviewQueue_OnNextMishyNeedSpawn(object sender, MishyPreviewQueue.twoMishy e)
+    private void MishyPreviewQueue_OnNextMishyNeedSpawn(object sender, MishyPreviewQueue.MishyPairEventArgs e)
     {
-        SpawnMishy(SpawnGridPositionDown, e.type_one);
-        SpawnMishy(SpawnGridPositionUp, e.type_two);
+        Mishy mishy_One= SpawnMishy(SpawnGridPositionDown, e.type_one);
+        Mishy mishy_Two= SpawnMishy(SpawnGridPositionUp, e.type_two);
+
+        mishyPlayerController.SetActivePair(mishy_One,mishy_Two);
     }
 
     public void SetUp(GridSystem<GridObject> gridSystem) 
@@ -45,11 +55,11 @@ public class MishyManager : MonoBehaviour
         this.gridSystem = gridSystem;
     }
 
-    public void SpawnMishy(GridPosition gridPosition,MishyType mishyType)
+    public Mishy SpawnMishy(GridPosition gridPosition,MishyType mishyType)
     {
         GameObject mishyPrefab= mishyDatabase.GetPrefab(mishyType);
         if(mishyPrefab==null)
-            return;
+            return null;
 
         GameObject mishyTransform=Instantiate(mishyPrefab,mishyContainer);
         mishyTransform.transform.localPosition = gridSystem.GetWorldPosition(gridPosition);
@@ -58,9 +68,35 @@ public class MishyManager : MonoBehaviour
         mishy.SetUp(gridPosition, mishyType);
         mishy.OnMishyLanded += (landedMishy) => 
         {
-            gridSystem.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
+            GridPosition finalPosition = landedMishy.GetGridPosition();
+
+            if (!gridSystem.HasMishy(finalPosition))
+            {
+                gridSystem.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
+                // TODO: 消除检查逻辑
+            }
         };
 
         Debug.Log($"生成了 {mishyDatabase.GetPrefab(mishyType).name} 在 {gridPosition}");
+        return mishy;
+    }
+
+    /// <summary>
+    /// 暂时得到所有咪西，因为往上推的时候每一个咪西都要动
+    /// </summary>
+    /// <returns></returns>
+    public List<Mishy> GetAllMishies() 
+    {
+        List<Mishy> mishies = new List<Mishy>();
+
+        for (int x = 0; x < gridSystem.GetWidth(); x++) 
+        {
+            for (int y = 0; y < gridSystem.GetHeight(); y++)
+            {
+                mishies.Add(gridSystem.GetGridMishy(new GridPosition(x,y)));
+            }
+        }
+
+        return mishies;
     }
 }
