@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GridSystem <TGridObject>
@@ -9,13 +11,22 @@ public class GridSystem <TGridObject>
     private int cellSize = 2;
 
     private GridObject[,] gridObjects;
+    private Vector3 originPosition;
 
-    public GridSystem(int width,int height, int cellSize)
+    public GridSystem(int width,int height, int cellSize,Vector3 originPosition)
     {
         this.width = width;
         this.height = height;
         gridObjects = new GridObject[width, height];
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++) 
+            {
+                gridObjects[x, y]=new GridObject(new GridPosition(x,y));
+            }
+        }
         this.cellSize = cellSize;
+        this.originPosition = originPosition;
     }
 
     public void ClearGridMishy(GridPosition gridPosition)
@@ -43,6 +54,7 @@ public class GridSystem <TGridObject>
         return gridObjects[gridPosition.x, gridPosition.y].HasMishy();
     }
 
+
     public int GetWidth()
     {
         return width;
@@ -51,5 +63,21 @@ public class GridSystem <TGridObject>
     public int GetHeight()
     {
         return height;
+    }
+
+    public GridPosition GetGridPosition(Vector3 worldPosition)
+    {
+        return new GridPosition(
+            Mathf.RoundToInt((worldPosition.x  - originPosition.x) /(float) cellSize),
+            Mathf.RoundToInt((worldPosition.y -originPosition.y) / (float)cellSize)
+            );
+    }
+
+    public Vector3 GetWorldPosition(GridPosition gridPosition)
+    {
+        return new Vector3(
+            gridPosition.x*cellSize + originPosition.x,
+            gridPosition.y*cellSize + originPosition.y,
+            originPosition.z);
     }
 }

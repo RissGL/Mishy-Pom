@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum MishyType
 {
-    None,
+    None=0,
     GreyMishy,
     PinkMeechy,
     GoldMischneider,
