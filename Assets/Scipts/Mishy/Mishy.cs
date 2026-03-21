@@ -15,7 +15,7 @@ public class Mishy : MonoBehaviour
 
     private void Update()
     {
-        SetGridPositionAfterDown(GridManager.Instance.GetGridPosition(transform.position));
+        SetGridPositionOnLand(GridManager.Instance.GetGridPosition(transform.position));
         if (isLanded)
         {
             //TODO: ÏÂÂäÂß¼­
@@ -29,7 +29,12 @@ public void SetUp(GridPosition gridPosition ,MishyType mishyType)
         this.type = mishyType;
     }
 
-    public void SetGridPositionAfterDown(GridPosition gridPosition)
+    public void SetGridPositionOnLand(GridPosition gridPosition)
+    {
+        this.gridPosition = gridPosition;
+    }
+
+    public void UpdateGridPosition(GridPosition gridPosition) 
     {
         this.gridPosition = gridPosition;
     }

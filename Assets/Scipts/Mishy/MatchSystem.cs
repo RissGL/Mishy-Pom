@@ -6,22 +6,22 @@ using static UnityEditor.PlayerSettings;
 public class MatchSystem : MonoBehaviour
 {
     private int currentCombo =0;
-    public const int MAX_COMBOO_COUNT = 6;
+    public const int MAX_COMBO_COUNT = 6;
 
     // 返回所有符合消除条件的咪西集合
     public List<Mishy> FindAllMatches()
     {
         List<Mishy> allMatches=new List<Mishy>();
-        bool[,] visited = new bool[MishyManager.Instance.GetGridSystemWidth(), 
-            MishyManager.Instance.GetGridSystemHeight()];
+        bool[,] visited = new bool[GridManager.Instance.GetWidth(),
+            GridManager.Instance.GetHeight()];
 
-        for (int x = 0; x < MishyManager.Instance.GetGridSystemWidth(); x++)
+        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
         {
-            for (int y = 0; y < MishyManager.Instance.GetGridSystemHeight(); y++) 
+            for (int y = 0; y < GridManager.Instance.GetHeight(); y++) 
             {
                 GridPosition gridPosition =new GridPosition(x,y);
 
-                if (!visited[x, y] && MishyManager.Instance.GetGridSystem().HasMishy(gridPosition))
+                if (!visited[x, y] && GridManager.Instance.HasMishy(gridPosition))
                 {
                     List<Mishy> connectedMishyies = GetConnectedMishies(gridPosition, visited);
 
@@ -40,7 +40,7 @@ public class MatchSystem : MonoBehaviour
     private List<Mishy> GetConnectedMishies(GridPosition startPos, bool[,] visited)
     {
         List<Mishy> connected=new List<Mishy>();
-        MishyType mishyType=MishyManager.Instance.GetGridSystem().GetGridMishy(startPos).GetMishyType();
+        MishyType mishyType= GridManager.Instance.GetGridMishy(startPos).GetMishyType();
 
         Stack<GridPosition> stack = new Stack<GridPosition>();
         stack.Push(startPos);
@@ -59,16 +59,16 @@ public class MatchSystem : MonoBehaviour
             if (visited[current.x,current.y]) continue;
             visited[current.x,current.y] = true;
 
-            connected.Add(MishyManager.Instance.GetGridSystem().GetGridMishy(current));
+            connected.Add(GridManager.Instance.GetGridMishy(current));
 
 
             foreach (GridPosition dir in dirs) 
             {
                 GridPosition gridPosition= dir+current;
 
-                if (MishyManager.Instance.GetGridSystem().IsValidGridPosition(gridPosition))
+                if (GridManager.Instance.IsValidGridPosition(gridPosition))
                 {
-                    if (MishyManager.Instance.GetGridSystem().GetGridMishy(gridPosition).GetMishyType() == mishyType)
+                    if (GridManager.Instance.GetGridMishy(gridPosition).GetMishyType() == mishyType)
                     {
                         stack.Push(gridPosition);
                     }
@@ -85,10 +85,10 @@ public class MatchSystem : MonoBehaviour
                 foreach (GridPosition dir in dirs)
                 {
                     GridPosition testPosition = mishyPosition + dir;
-                    if (MishyManager.Instance.GetGridSystem().GetGridMishy(testPosition).GetMishyType()
-                        ==MishyType.BadMishy)
+                    if (GridManager.Instance.TryGetGridMishy(testPosition,out Mishy mishy_test)&&
+                        mishy_test.GetMishyType()==MishyType.BadMishy)
                     {
-                        connected.Add(MishyManager.Instance.GetGridSystem().GetGridMishy(testPosition));
+                        connected.Add(GridManager.Instance.GetGridMishy(testPosition));
                     }
                 }
             }
@@ -112,14 +112,14 @@ public class MatchSystem : MonoBehaviour
             }
 
             // 1. 计算分数
-            int multiplier = Mathf.Min(currentCombo, MAX_COMBOO_COUNT);
+            int multiplier = Mathf.Min(currentCombo, MAX_COMBO_COUNT);
             int score = matches.Count * 10 * multiplier;
             Debug.Log($"消除了 {matches.Count} 个，连击数 {currentCombo}，获得分数：{score}");
 
             // 2. 销毁并清理网格
             foreach (Mishy m in matches)
             {
-                MishyManager.Instance.GetGridSystem().ClearGridMishy(m.GetGridPosition());
+                GridManager.Instance.ClearGridMishy(m.GetGridPosition());
                 Destroy(m.gameObject);
             }
 
