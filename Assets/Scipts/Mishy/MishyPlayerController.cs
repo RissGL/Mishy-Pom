@@ -44,7 +44,7 @@ public class MishyPlayerController : MonoBehaviour
 
     private void SwapMishies() 
     {
-        Vector3 temp = mishy_One.transform.position;
+        Vector3 temp = mishy_One.transform.localPosition;
         mishy_One.transform.localPosition = mishy_Two.transform.localPosition;
         mishy_Two.transform.localPosition=temp;
     }

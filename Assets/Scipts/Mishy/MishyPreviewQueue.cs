@@ -28,7 +28,7 @@ public class MishyPreviewQueue : MonoBehaviour
 
         for (int i = 0; i < reviewCount; i++) 
         {
-            nextMishies.Enqueue(RandomMishyType());
+            nextMishies.Enqueue(MishyManager.Instance.RandomMishyType());
         }
     }
 
@@ -38,13 +38,9 @@ public class MishyPreviewQueue : MonoBehaviour
 
         for (int i = 0; i < 2; i++) 
         {
-            nextMishies.Enqueue(RandomMishyType());
+            nextMishies.Enqueue(MishyManager.Instance.RandomMishyType());
         }
         OnNextMishyNeedSpawn?.Invoke(this, twoMishy);
     }
 
-    public MishyType RandomMishyType() 
-    {
-        return (MishyType)UnityEngine.Random.Range(1, 5);//不会在这生成恶咪西
-    }
 }

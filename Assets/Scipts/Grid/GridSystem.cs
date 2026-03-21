@@ -80,4 +80,9 @@ public class GridSystem <TGridObject>
             gridPosition.y*cellSize + originPosition.y,
             originPosition.z);
     }
+
+    public bool IsValidGridPosition(GridPosition gridPosition) 
+    {
+        return (gridPosition.x >= 0 && gridPosition.y >= 0 &&gridPosition.x<width && gridPosition.y<height);
+    }
 }

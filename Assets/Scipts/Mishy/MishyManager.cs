@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,12 +9,23 @@ public class MishyManager : MonoBehaviour
 
     private GridSystem<GridObject> gridSystem;
 
+    [Header("存放咪西的父节点")]
     [SerializeField] private Transform mishyContainer;   // 场景中存放咪西的父节点
+
+    [Header("咪西SO配置文件")]
     [SerializeField] private MishyDatabase mishyDatabase; //SO 文件
+
+    [Header("咪西预览队列 竖")]
     [SerializeField] private MishyPreviewQueue mishyPreviewQueue;
 
+    [Header("咪西生成的网格位置")]
     [SerializeField] private GridPosition SpawnGridPositionDown;
+
+    [Header("下落的咪西")]
     [SerializeField] private MishyPlayerController mishyPlayerController;
+
+    [Header("消除系统")]
+    [SerializeField] private MatchSystem mishyMatchSystem;
     private GridPosition SpawnGridPositionUp;
 
     private void Awake()
@@ -98,5 +110,34 @@ public class MishyManager : MonoBehaviour
         }
 
         return mishies;
+    }
+
+    public GridSystem<GridObject> GetGridSystem() 
+    {
+        return gridSystem;
+    }
+
+    public int GetGridSystemWidth()
+    {
+        return gridSystem.GetWidth();
+    }
+
+    public int GetGridSystemHeight()
+    {
+        return gridSystem.GetHeight();
+    }
+
+
+    public MishyType RandomMishyType()
+    {
+        return (MishyType)UnityEngine.Random.Range(1, 5);//不会在这生成恶咪西
+    }
+
+    /// <summary>
+    /// 下落
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    public void ApplyGravity()
+    {
     }
 }

@@ -10,11 +10,17 @@ public class Mishy : MonoBehaviour
     [SerializeField]private MishyType type;
     private GridPosition gridPosition;
 
+    private bool isLanded=false;
+
 
     private void Update()
     {
         SetGridPositionAfterDown(GridManager.Instance.GetGridPosition(transform.position));
-        OnMishyLanded?.Invoke(this);
+        if (isLanded)
+        {
+            //TODO: ÏÂÂäÂß¼­
+            OnMishyLanded?.Invoke(this);
+        }
     }
 
 public void SetUp(GridPosition gridPosition ,MishyType mishyType)
