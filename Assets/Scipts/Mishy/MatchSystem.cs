@@ -143,9 +143,11 @@ public class MatchSystem : MonoBehaviour
             {
                 GridManager.Instance.ClearGridMishy(m.GetGridPosition());
 
-                // TODO: 播放爆炸特效
+                // TODO: 咪西消灭动画
+                m.PlayVanishAni();
 
-                Destroy(m.gameObject);
+
+                Destroy(m.gameObject,0.4f);
             }
 
             // 等待半秒钟

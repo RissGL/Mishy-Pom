@@ -166,6 +166,9 @@ public class MishyPlayerController : MonoBehaviour
         mishy_One.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
         mishy_Two.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
 
+        mishy_One.PlayLandAni();
+        mishy_Two.PlayLandAni();
+
         GridManager.Instance.SetGridMishy(mishy_One.GetGridPosition(), mishy_One);
         GridManager.Instance.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
 

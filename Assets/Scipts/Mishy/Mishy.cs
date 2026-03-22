@@ -28,9 +28,26 @@ public class Mishy : MonoBehaviour
 
     public GridPosition GetGridPosition() => gridPosition;
 
+    /// <summary>
+    /// 下落动画
+    /// </summary>
+    /// <param name="targetGridPosition"></param>
     public void PlayDownAni(GridPosition targetGridPosition)
     {
         mishyVisual.DownMoveAni(this.transform, targetGridPosition);
         Debug.Log(targetGridPosition);
+    }
+
+    public void PlayVanishAni() 
+    {
+        mishyVisual.PlayVanishEffects();
+    }
+
+    /// <summary>
+    /// 落地效果
+    /// </summary>
+    public void PlayLandAni() 
+    {
+        mishyVisual.PlayLandEffects();
     }
 }
