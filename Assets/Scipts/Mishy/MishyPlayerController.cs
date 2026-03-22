@@ -48,14 +48,39 @@ public class MishyPlayerController : MonoBehaviour
             SwapMishies();
         }
 
-        if (Input.GetKeyDown(KeyCode.S)) currentFallInterval = fastFallInterval;
+        /*bool isHoldingS = Input.GetKey(KeyCode.S);
+        float targetInterval = isHoldingS ? fastFallInterval : fallInterval;
+
+        if (currentFallInterval != targetInterval)
+        {
+            if (isHoldingS && fallTimer > fastFallInterval)
+            {
+                fallTimer = fastFallInterval; 
+            }
+            currentFallInterval = targetInterval;
+        }*/
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            currentFallInterval = fastFallInterval;
+            if (fallTimer > currentFallInterval) 
+            {
+                fallTimer = currentFallInterval; 
+            }
+        }
         if (Input.GetKeyUp(KeyCode.S)) currentFallInterval = fallInterval;
 
+
         fallTimer += Time.deltaTime;
-        if (fallTimer >= currentFallInterval)
+        while (fallTimer >= currentFallInterval)
         {
-            fallTimer = 0f;
+            fallTimer -= currentFallInterval;
             TryMoveDown(); // 逻辑上一格一格掉
+
+            if (!isActive)
+            {
+                break;
+            }
         }
 
         UpdateVisuals();
@@ -80,6 +105,7 @@ public class MishyPlayerController : MonoBehaviour
         posTwo.y = Mathf.MoveTowards(posTwo.y, targetPosTwo.y, fallSpeed * Time.deltaTime);
         mishy_Two.transform.localPosition = posTwo;
     }
+
 
     private void TryMove(GridPosition moveDir) 
     {

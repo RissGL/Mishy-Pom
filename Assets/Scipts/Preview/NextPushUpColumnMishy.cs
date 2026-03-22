@@ -31,7 +31,14 @@ public class NextPushUpColumnMishy : MonoBehaviour
     public void PushColumnMishyUp()
     {
         OnMishyPushUp?.Invoke(this, mishies);
+        RandomAllMishy();
+    }
 
+    public void TestPushColumnMishyUp(out MishyType[] mishyTypes)
+    {
+        mishyTypes = (MishyType[])mishies.Clone();
+
+        OnMishyPushUp?.Invoke(this, mishyTypes);
         RandomAllMishy();
     }
 }

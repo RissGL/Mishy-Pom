@@ -10,6 +10,10 @@ public class MishyPreviewQueue : MonoBehaviour
 
     public event EventHandler<MishyPairEventArgs> OnNextMishyNeedSpawn;
 
+    public event EventHandler<Queue<MishyType>> OnNextMishyEequeue;
+    public event EventHandler OnPreviewQueueInit;
+
+
     public class MishyPairEventArgs : EventArgs
     {
         public MishyPairEventArgs(MishyType type_one, MishyType type_two)
@@ -35,17 +39,31 @@ public class MishyPreviewQueue : MonoBehaviour
         {
             nextMishies.Enqueue(MishyManager.Instance.RandomMishyType());
         }
+        OnPreviewQueueInit?.Invoke(this,EventArgs.Empty);
     }
 
     public void DequeueNextMishy() 
     {
         MishyPairEventArgs twoMishy = new MishyPairEventArgs(nextMishies.Dequeue(),nextMishies.Dequeue());
 
+        Queue<MishyType> twoEnqueueMishy = new Queue<MishyType>();
+
         for (int i = 0; i < 2; i++) 
         {
-            nextMishies.Enqueue(MishyManager.Instance.RandomMishyType());
+            MishyType mishyType = MishyManager.Instance.RandomMishyType();
+            nextMishies.Enqueue(mishyType);
+            twoEnqueueMishy.Enqueue(mishyType);
         }
         OnNextMishyNeedSpawn?.Invoke(this, twoMishy);
+        OnNextMishyEequeue?.Invoke(this, twoEnqueueMishy);
     }
 
+    /// <summary>
+    /// 提供给UI的方法
+    /// </summary>
+    /// <returns></returns>
+    public Queue<MishyType> GetAllNextMishy() 
+    {
+        return nextMishies;
+    }
 }

@@ -13,6 +13,11 @@ public class Mishy : MonoBehaviour
     [SerializeField]private MishyType type;
     private GridPosition gridPosition;
 
+    public void SetGridPosition(GridPosition pos)
+    {
+        gridPosition = pos;
+    }
+
     public void SetUp(GridPosition gridPosition ,MishyType mishyType)
     {
         this.gridPosition = gridPosition;

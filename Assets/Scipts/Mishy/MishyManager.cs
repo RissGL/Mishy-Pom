@@ -29,7 +29,7 @@ public class MishyManager : MonoBehaviour
     [SerializeField] private MatchSystem mishyMatchSystem;
 
     private GridPosition SpawnGridPositionUp;
-    private GridPosition SpawnGridPositionDown = new GridPosition(2, 10);
+    private GridPosition SpawnGridPositionDown = new GridPosition(3, 12);
 
 
     private void Awake()
@@ -55,7 +55,24 @@ public class MishyManager : MonoBehaviour
         //TODO:改成等待玩家确定后再生成第一个
     }
 
+    public struct StartPositionUpAndDown
+    {
+        public StartPositionUpAndDown(GridPosition down,GridPosition up) 
+        { 
+            this.SpawnGridPositionDown=down;
+            this.SpawnGridPositionUp=up;
+        }
 
+        public GridPosition SpawnGridPositionDown;
+        public GridPosition SpawnGridPositionUp;
+    }
+    public StartPositionUpAndDown GetStartPosition() 
+    {
+        return new StartPositionUpAndDown(
+            SpawnGridPositionDown,
+            SpawnGridPositionUp
+        );
+    }
 
     private void OnDestroy()
     {
@@ -88,8 +105,10 @@ public class MishyManager : MonoBehaviour
 
         for (int i = 0; i < e.Length; i++) 
         {
-            SpawnMishy(new GridPosition(i, 0), e[i]);
+            SpawnAndSetMishy(new GridPosition(i, 0), e[i]);
         }
+
+        mishyMatchSystem.StartMatchSequence();
     }
 
     /*public void SetUp(GridSystem<GridObject> gridSystem) 
@@ -119,6 +138,34 @@ public class MishyManager : MonoBehaviour
             }
         };
 
+        Debug.Log($"生成了 {mishyDatabase.GetPrefab(mishyType).name} 在 {gridPosition}");
+        return mishy;
+    }
+
+    public Mishy SpawnAndSetMishy(GridPosition gridPosition, MishyType mishyType)
+    {
+        GameObject mishyPrefab = mishyDatabase.GetPrefab(mishyType);
+        if (mishyPrefab == null)
+            return null;
+
+        GameObject mishyTransform = Instantiate(mishyPrefab, mishyContainer);
+        mishyTransform.transform.localPosition = GridManager.Instance.GetWorldPosition(gridPosition);
+
+        Mishy mishy = mishyTransform.GetComponent<Mishy>();
+        mishy.SetUp(gridPosition, mishyType);
+        mishy.OnMishyLanded += (landedMishy) =>
+        {
+            GridPosition finalPosition = landedMishy.GetGridPosition();
+
+            if (!GridManager.Instance.HasMishy(finalPosition))
+            {
+                GridManager.Instance.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
+                // TODO: 消除检查逻辑
+            }
+        };
+
+
+        GridManager.Instance.SetGridMishy(gridPosition, mishy);
         Debug.Log($"生成了 {mishyDatabase.GetPrefab(mishyType).name} 在 {gridPosition}");
         return mishy;
     }
@@ -171,7 +218,7 @@ public class MishyManager : MonoBehaviour
 
     public MishyType RandomMishyTypeWithBadMishy()
     {
-        return (MishyType)UnityEngine.Random.Range(1, 6);//不会在这生成恶咪西
+        return (MishyType)(int)(UnityEngine.Random.Range(10, 52)/10);//不会在这生成恶咪西
     }
 
     /// <summary>
@@ -233,13 +280,23 @@ public class MishyManager : MonoBehaviour
     /// </summary>
     public void PushAllMishyUp() 
     {
+        // 必须从上往下遍历，不然会覆盖掉上面的方块！(你的倒序遍历是对的)
         for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
         {
-            for (int y = GridManager.Instance.GetHeight()-1; y >= 0; y--)
+            for (int y = GridManager.Instance.GetHeight() - 1; y >= 0; y--)
             {
-                Mishy mishy = GridManager.Instance.GetGridMishy(new GridPosition(x, y));
-                GridManager.Instance.MoveMishyWithGridPosition(mishy.GetGridPosition(),
-                    new GridPosition(0, 1), mishy);
+                if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy m))
+                {
+                    GridPosition currentPos = m.GetGridPosition();
+                    GridPosition moveDir = new GridPosition(0, 1);
+                    GridPosition targetPos = currentPos + moveDir;
+
+                    GridManager.Instance.MoveMishyWithGridPosition(currentPos, moveDir, m);
+
+                    m.UpdateGridPosition(targetPos);
+
+                    m.PlayDownAni(targetPos);
+                }
             }
         }
     }
@@ -251,4 +308,13 @@ public class MishyManager : MonoBehaviour
     {
         mishyPreviewQueue.DequeueNextMishy();
     }
+
+    /// <summary>
+    /// 用作测试
+    /// </summary>
+    public void MishyColumnUp() 
+    {
+        mishyNextPushUpColumn.PushColumnMishyUp();
+    }
 }
+
