@@ -13,6 +13,7 @@ public class Mishy : MonoBehaviour
     [SerializeField]private MishyType type;
     private GridPosition gridPosition;
 
+    public bool IsMoving=>mishyVisual.IsMoving;
     public void SetGridPosition(GridPosition pos)
     {
         gridPosition = pos;

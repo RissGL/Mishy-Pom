@@ -31,6 +31,8 @@ public class MishyManager : MonoBehaviour
     private GridPosition SpawnGridPositionUp;
     private GridPosition SpawnGridPositionDown = new GridPosition(3, 12);
 
+    private MishyType[] currentMishyPairType=null;
+
 
     private void Awake()
     {
@@ -53,25 +55,6 @@ public class MishyManager : MonoBehaviour
         mishyNextPushUpColumn.NextPushUpColumnMishyInit();
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
-    }
-
-    public struct StartPositionUpAndDown
-    {
-        public StartPositionUpAndDown(GridPosition down,GridPosition up) 
-        { 
-            this.SpawnGridPositionDown=down;
-            this.SpawnGridPositionUp=up;
-        }
-
-        public GridPosition SpawnGridPositionDown;
-        public GridPosition SpawnGridPositionUp;
-    }
-    public StartPositionUpAndDown GetStartPosition() 
-    {
-        return new StartPositionUpAndDown(
-            SpawnGridPositionDown,
-            SpawnGridPositionUp
-        );
     }
 
     private void OnDestroy()
@@ -101,20 +84,45 @@ public class MishyManager : MonoBehaviour
     /// <param name="e"></param>
     public void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[] e)
     {
-        PushAllMishyUp();
+        currentMishyPairType= mishyPlayerController.InterruptAndClearActivePair();
 
-        for (int i = 0; i < e.Length; i++) 
-        {
-            SpawnAndSetMishy(new GridPosition(i, 0), e[i]);
-        }
+        SpawnMishyOnButtom(e);
+
+    }
+
+    /// <summary>
+    /// 延迟结算
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator DelayedSettlement() 
+    {
+        //该处逻辑可能要修改，不太行
+        yield return new WaitUntil(() => !CheckAllMishyMoveState());
+
+        //短暂停留一下
+        yield return new WaitForSeconds(0.1f);
 
         mishyMatchSystem.StartMatchSequence();
     }
 
-    /*public void SetUp(GridSystem<GridObject> gridSystem) 
+
+    /// <summary>
+    /// 底部生成咪西
+    /// </summary>
+    /// <param name="count"></param>
+    public void SpawnMishyOnButtom(MishyType[] mishyTypes, int count = 1)
     {
-        this.gridSystem = gridSystem;
-    }*/
+        PushAllMishyUp(count);
+        for (int y = 0; y < count; y++)
+        {
+            for (int x = 0; x < mishyTypes.Length; x++)
+            {
+                Mishy mishy = SpawnAndSetMishy(new GridPosition(x, y), mishyTypes[x]);
+                mishy.PlayLandAni();
+            }
+        }
+        StartCoroutine(DelayedSettlement());
+    }
 
     public Mishy SpawnMishy(GridPosition gridPosition,MishyType mishyType)
     {
@@ -138,7 +146,6 @@ public class MishyManager : MonoBehaviour
             }
         };
 
-        Debug.Log($"生成了 {mishyDatabase.GetPrefab(mishyType).name} 在 {gridPosition}");
         return mishy;
     }
 
@@ -164,9 +171,7 @@ public class MishyManager : MonoBehaviour
             }
         };
 
-
         GridManager.Instance.SetGridMishy(gridPosition, mishy);
-        Debug.Log($"生成了 {mishyDatabase.GetPrefab(mishyType).name} 在 {gridPosition}");
         return mishy;
     }
 
@@ -190,6 +195,29 @@ public class MishyManager : MonoBehaviour
         }
 
         return mishies;
+    }
+
+
+    /// <summary>
+    /// 检测是否在动，如果有在动的就返回true
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckAllMishyMoveState() 
+    {
+        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        {
+            for (int y = 0; y < GridManager.Instance.GetHeight(); y++)
+            {
+                if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
+                {
+                    if (mishy.IsMoving)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /*public GridSystem<GridObject> GetGridSystem() 
@@ -216,9 +244,13 @@ public class MishyManager : MonoBehaviour
         return (MishyType)UnityEngine.Random.Range(1, 5);//不会在这生成恶咪西
     }
 
+    /// <summary>
+    /// 随机咪西类型，带生成恶咪西的
+    /// </summary>
+    /// <returns></returns>
     public MishyType RandomMishyTypeWithBadMishy()
     {
-        return (MishyType)(int)(UnityEngine.Random.Range(10, 52)/10);//不会在这生成恶咪西
+        return (MishyType)(int)(UnityEngine.Random.Range(10, 51)/10);//不会在这生成恶咪西
     }
 
     /// <summary>
@@ -271,14 +303,17 @@ public class MishyManager : MonoBehaviour
         // 如果发生了掉落，等待掉落动画播完再继续（让玩家看清连消过程）
         if (movedAny)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !CheckAllMishyMoveState());
+
+            //稍微停顿一下
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
     /// <summary>
     /// 往上推所有的咪西
     /// </summary>
-    public void PushAllMishyUp() 
+    public void PushAllMishyUp(int rowCount = 1) 
     {
         // 必须从上往下遍历，不然会覆盖掉上面的方块！(你的倒序遍历是对的)
         for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
@@ -288,7 +323,7 @@ public class MishyManager : MonoBehaviour
                 if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy m))
                 {
                     GridPosition currentPos = m.GetGridPosition();
-                    GridPosition moveDir = new GridPosition(0, 1);
+                    GridPosition moveDir = new GridPosition(0, rowCount);
                     GridPosition targetPos = currentPos + moveDir;
 
                     GridManager.Instance.MoveMishyWithGridPosition(currentPos, moveDir, m);
@@ -306,7 +341,19 @@ public class MishyManager : MonoBehaviour
     /// </summary>
     public void SpawnNextPair()
     {
-        mishyPreviewQueue.DequeueNextMishy();
+        if (currentMishyPairType!=null)
+        {
+            Mishy mishy_One = SpawnMishy(SpawnGridPositionDown, currentMishyPairType[0]);
+            Mishy mishy_Two = SpawnMishy(SpawnGridPositionUp, currentMishyPairType[1]);
+
+            mishyPlayerController.SetActivePair(mishy_One, mishy_Two);
+
+            currentMishyPairType = null;
+        }
+        else 
+        {
+            mishyPreviewQueue.DequeueNextMishy(); 
+        }
     }
 
     /// <summary>

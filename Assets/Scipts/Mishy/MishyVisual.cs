@@ -17,6 +17,7 @@ public class MishyVisual : MonoBehaviour
     private const string VANISH_TRIGGER = "Vanish";
     private const string FALL_OVER_TRIGGER = "FallOver";
 
+    public bool IsMoving => moveCoroutine != null;
 
     public void DownMoveAni(Transform rootTransform, GridPosition targetGridPosition) 
     {
@@ -27,14 +28,16 @@ public class MishyVisual : MonoBehaviour
             StopCoroutine(moveCoroutine);
         }
 
-        StartCoroutine(MoveToTargetRoutine(rootTransform,targetPosition));
+        moveCoroutine=StartCoroutine(MoveToTargetRoutine(rootTransform,targetPosition));
     }
 
     private IEnumerator MoveToTargetRoutine(Transform rootTransform,Vector3 targetPos)
     {
         float currentSpeed = startSpeed;
 
-        while (Vector3.Distance(targetPos, rootTransform.localPosition) > 0.01f)
+        //Æ«ÒÆÖµ
+        float offset = 0.15f;
+        while (Vector3.Distance(targetPos, rootTransform.localPosition) > offset)
         {
             currentSpeed += Time.deltaTime * gravity;
 

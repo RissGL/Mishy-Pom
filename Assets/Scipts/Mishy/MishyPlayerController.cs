@@ -10,9 +10,12 @@ public class MishyPlayerController : MonoBehaviour
 
     [Header("下落节奏设置")]
     [SerializeField] private float fallInterval = 1.0f;     // 正常下落速度
-    [SerializeField] private float fastFallInterval = 0.05f;// 加速下落速度
+    [SerializeField] private float fastFallInterval = 0.3f;// 加速下落速度
+
     private float fallTimer;
     private float currentFallInterval;
+
+    private float moveSpeed=15f;
 
     public void SetActivePair(Mishy mishy_One, Mishy mishy_Two)
     {
@@ -48,19 +51,18 @@ public class MishyPlayerController : MonoBehaviour
             SwapMishies();
         }
 
-        /*bool isHoldingS = Input.GetKey(KeyCode.S);
-        float targetInterval = isHoldingS ? fastFallInterval : fallInterval;
+        bool isHoldingS=Input.GetKey(KeyCode.S);
+        float targetFallInterval=isHoldingS ? fastFallInterval : fallInterval;
 
-        if (currentFallInterval != targetInterval)
+        //利用百分比同步下落进度
+        if (currentFallInterval != targetFallInterval)
         {
-            if (isHoldingS && fallTimer > fastFallInterval)
-            {
-                fallTimer = fastFallInterval; 
-            }
-            currentFallInterval = targetInterval;
-        }*/
+            float process=fallTimer/currentFallInterval;
+            currentFallInterval=targetFallInterval;
+            fallTimer=currentFallInterval*process;
+        }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        /*if (Input.GetKeyDown(KeyCode.S))
         {
             currentFallInterval = fastFallInterval;
             if (fallTimer > currentFallInterval) 
@@ -68,7 +70,7 @@ public class MishyPlayerController : MonoBehaviour
                 fallTimer = currentFallInterval; 
             }
         }
-        if (Input.GetKeyUp(KeyCode.S)) currentFallInterval = fallInterval;
+        if (Input.GetKeyUp(KeyCode.S)) currentFallInterval = fallInterval;*/
 
 
         fallTimer += Time.deltaTime;
@@ -91,21 +93,22 @@ public class MishyPlayerController : MonoBehaviour
         Vector3 targetPosOne = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
         Vector3 targetPosTwo = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
 
-        float fallSpeed = GridManager.Instance.GetCellSize() / currentFallInterval;
+        float fallSpeed = (float)GridManager.Instance.GetCellSize() / currentFallInterval;
 
+        
         // 咪西一
         Vector3 posOne = mishy_One.transform.localPosition;
-        posOne.x = Mathf.Lerp(posOne.x, targetPosOne.x, Time.deltaTime * 15f);
+        posOne.x = Mathf.Lerp(posOne.x, targetPosOne.x, Time.deltaTime * moveSpeed);
         posOne.y = Mathf.MoveTowards(posOne.y, targetPosOne.y, fallSpeed * Time.deltaTime);
         mishy_One.transform.localPosition = posOne;
 
         // 咪西二
         Vector3 posTwo = mishy_Two.transform.localPosition;
-        posTwo.x = Mathf.Lerp(posTwo.x, targetPosTwo.x, Time.deltaTime * 15f);
+        posTwo.x = Mathf.Lerp(posTwo.x, targetPosTwo.x, Time.deltaTime * moveSpeed);
         posTwo.y = Mathf.MoveTowards(posTwo.y, targetPosTwo.y, fallSpeed * Time.deltaTime);
         mishy_Two.transform.localPosition = posTwo;
+        
     }
-
 
     private void TryMove(GridPosition moveDir) 
     {
@@ -199,5 +202,33 @@ public class MishyPlayerController : MonoBehaviour
         GridManager.Instance.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
 
         FindObjectOfType<MatchSystem>().StartMatchSequence();
+    }
+
+
+    /// <summary>
+    /// 中断当前的下落，销毁物体，并返回它们的类型
+    /// </summary>
+    public MishyType[] InterruptAndClearActivePair() 
+    {
+        if (isActive==false||mishy_One==null||mishy_Two==null) 
+        {
+            return null;
+        }
+
+        isActive = false;
+
+        MishyType[] mishyTypes=new MishyType[2];
+
+        mishyTypes[0]=mishy_One.GetMishyType();
+        mishyTypes[1] = mishy_Two.GetMishyType();
+
+        Destroy(mishy_One.gameObject);
+        Destroy(mishy_Two.gameObject);
+
+        // 清空引用
+        mishy_One = null;
+        mishy_Two = null;
+
+        return mishyTypes;
     }
 }

@@ -8,6 +8,9 @@ public class MatchSystem : MonoBehaviour
     private int currentCombo =0;
     public const int MAX_COMBO_COUNT = 6;
 
+    public bool IsMatching { get; private set; }
+
+
     // 返回所有符合消除条件的咪西集合
     public List<Mishy> FindAllMatches()
     {
@@ -113,11 +116,14 @@ public class MatchSystem : MonoBehaviour
 
     public void StartMatchSequence()
     {
+        if (IsMatching)
+            return;
         StartCoroutine(ProcessMatchesRoutine());
     }
 
     private IEnumerator ProcessMatchesRoutine()
     {
+        IsMatching = true;
         currentCombo = 1;
         while (true)
         {
@@ -130,6 +136,7 @@ public class MatchSystem : MonoBehaviour
 
                 MishyManager.Instance.SpawnNextPair();
 
+                IsMatching = false;
                 yield break; // 结束协程
             }
 
