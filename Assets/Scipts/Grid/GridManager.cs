@@ -25,6 +25,7 @@ public class GridManager : MonoBehaviour
         }
 
         Instance = this;
+        gridSystem = new GridSystem<GridObject>(width, height, cellSize, originPosition);
     }
 
     /*public void SetUp() 
@@ -34,7 +35,6 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
-        gridSystem = new GridSystem<GridObject>(width, height, cellSize, originPosition);
         //MishyManager.Instance.SetUp(gridSystem);
     }
 

@@ -19,6 +19,9 @@ public class MishyPlayerController : MonoBehaviour
         this.mishy_One = mishy_One;
         this.mishy_Two = mishy_Two;
         isActive = true;
+
+        currentFallInterval = fallInterval;
+        fallTimer = 0f;
     }
 
     private void Update()
@@ -150,7 +153,12 @@ public class MishyPlayerController : MonoBehaviour
     {
         isActive = false;
 
+        mishy_One.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
+        mishy_Two.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
+
         GridManager.Instance.SetGridMishy(mishy_One.GetGridPosition(), mishy_One);
         GridManager.Instance.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
+
+        FindObjectOfType<MatchSystem>().StartMatchSequence();
     }
 }

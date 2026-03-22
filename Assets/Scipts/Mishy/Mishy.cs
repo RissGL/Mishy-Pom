@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Mishy : MonoBehaviour
 {
+    [Header("动画系统")]
+    [SerializeField] private Animator animator;
+
     public event Action<Mishy> OnMishyLanded; // 落地事件
 
     [SerializeField]private MishyType type;
@@ -12,26 +15,10 @@ public class Mishy : MonoBehaviour
 
     private bool isLanded=false;
 
-
-    private void Update()
-    {
-        SetGridPositionOnLand(GridManager.Instance.GetGridPosition(transform.position));
-        if (isLanded)
-        {
-            //TODO: 下落逻辑
-            OnMishyLanded?.Invoke(this);
-        }
-    }
-
-public void SetUp(GridPosition gridPosition ,MishyType mishyType)
+    public void SetUp(GridPosition gridPosition ,MishyType mishyType)
     {
         this.gridPosition = gridPosition;
         this.type = mishyType;
-    }
-
-    public void SetGridPositionOnLand(GridPosition gridPosition)
-    {
-        this.gridPosition = gridPosition;
     }
 
     public void UpdateGridPosition(GridPosition gridPosition) 

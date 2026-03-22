@@ -68,9 +68,12 @@ public class MatchSystem : MonoBehaviour
 
                 if (GridManager.Instance.IsValidGridPosition(gridPosition))
                 {
-                    if (GridManager.Instance.GetGridMishy(gridPosition).GetMishyType() == mishyType)
+                    if (GridManager.Instance.HasMishy(gridPosition))
                     {
-                        stack.Push(gridPosition);
+                        if (GridManager.Instance.GetGridMishy(gridPosition).GetMishyType() == mishyType)
+                        {
+                            stack.Push(gridPosition);
+                        }
                     }
                 }
             }
@@ -78,6 +81,7 @@ public class MatchSystem : MonoBehaviour
 
         if (connected.Count >= 3)
         {
+            List<Mishy> badMishiesToDestroy = new List<Mishy>();
             foreach (var mishy in connected)
             {
                 GridPosition mishyPosition = mishy.GetGridPosition();
@@ -85,15 +89,31 @@ public class MatchSystem : MonoBehaviour
                 foreach (GridPosition dir in dirs)
                 {
                     GridPosition testPosition = mishyPosition + dir;
-                    if (GridManager.Instance.TryGetGridMishy(testPosition,out Mishy mishy_test)&&
-                        mishy_test.GetMishyType()==MishyType.BadMishy)
+
+                    // 1. 先判断是否越界
+                    if (GridManager.Instance.IsValidGridPosition(testPosition))
                     {
-                        connected.Add(GridManager.Instance.GetGridMishy(testPosition));
+                        // 2. 再安全地获取咪西，看是不是坏咪西
+                        if (GridManager.Instance.TryGetGridMishy(testPosition, out Mishy mishy_test) &&
+                            mishy_test.GetMishyType() == MishyType.BadMishy)
+                        {
+                            // 3. 防止同一个坏咪西被多个相邻的普通咪西重复添加
+                            if (!badMishiesToDestroy.Contains(mishy_test))
+                            {
+                                badMishiesToDestroy.Add(mishy_test);
+                            }
+                        }
                     }
                 }
             }
+            connected.AddRange(badMishiesToDestroy);
         }
         return connected;
+    }
+
+    public void StartMatchSequence()
+    {
+        StartCoroutine(ProcessMatchesRoutine());
     }
 
     private IEnumerator ProcessMatchesRoutine()
@@ -105,34 +125,36 @@ public class MatchSystem : MonoBehaviour
 
             if (matches.Count == 0)
             {
-                // 没有任何消除，结算结束，重置 Combo，生成下一对咪西
+                // 没有任何消除，结算结束，重置 Combo
                 currentCombo = 0;
-                // 通知 Controller 生成新的
-                yield break;
+
+                MishyManager.Instance.SpawnNextPair();
+
+                yield break; // 结束协程
             }
 
-            // 1. 计算分数
+            // 计算分数
             int multiplier = Mathf.Min(currentCombo, MAX_COMBO_COUNT);
             int score = matches.Count * 10 * multiplier;
             Debug.Log($"消除了 {matches.Count} 个，连击数 {currentCombo}，获得分数：{score}");
 
-            // 2. 销毁并清理网格
+            // 销毁并清理网格
             foreach (Mishy m in matches)
             {
                 GridManager.Instance.ClearGridMishy(m.GetGridPosition());
+
+                // TODO: 播放爆炸特效
+
                 Destroy(m.gameObject);
             }
 
-            // 3. 等待半秒钟，让玩家看清楚消除了
-            yield return new WaitForSeconds(0.5f);
+            // 等待半秒钟
+            yield return new WaitForSeconds(0.4f);
 
-            // 4. 重力下落算法 (把上面的方块往下挪)
-            MishyManager.Instance.ApplyGravity();
+            // 变成协程等待它掉完
+            yield return StartCoroutine(MishyManager.Instance.ApplyGravityRoutine());
 
-            // 5. 等待方块掉下去
-            yield return new WaitForSeconds(0.3f);
-
-            // 连击数增加，进入下一次 while 循环检测
+            // 连击数增加，进入下一次循环
             currentCombo++;
         }
     }

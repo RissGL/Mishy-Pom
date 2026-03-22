@@ -24,7 +24,7 @@ public class NextPushUpColumnMishy : MonoBehaviour
     {
         for (int i = 0; i < mishies.Length; i++) 
         {
-            mishies[i] = MishyManager.Instance.RandomMishyType();
+            mishies[i] = MishyManager.Instance.RandomMishyTypeWithBadMishy();
         }
     }
 

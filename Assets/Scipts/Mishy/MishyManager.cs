@@ -18,8 +18,6 @@ public class MishyManager : MonoBehaviour
     [Header("咪西预览队列 竖")]
     [SerializeField] private MishyPreviewQueue mishyPreviewQueue;
 
-    [Header("咪西生成的网格位置")]
-    [SerializeField] private GridPosition SpawnGridPositionDown;
 
     [Header("下落的咪西")]
     [SerializeField] private MishyPlayerController mishyPlayerController;
@@ -29,7 +27,10 @@ public class MishyManager : MonoBehaviour
 
     [Header("消除系统")]
     [SerializeField] private MatchSystem mishyMatchSystem;
+
     private GridPosition SpawnGridPositionUp;
+    private GridPosition SpawnGridPositionDown = new GridPosition(2, 10);
+
 
     private void Awake()
     {
@@ -81,7 +82,7 @@ public class MishyManager : MonoBehaviour
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[] e)
+    public void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[] e)
     {
         PushAllMishyUp();
 
@@ -168,13 +169,64 @@ public class MishyManager : MonoBehaviour
         return (MishyType)UnityEngine.Random.Range(1, 5);//不会在这生成恶咪西
     }
 
+    public MishyType RandomMishyTypeWithBadMishy()
+    {
+        return (MishyType)UnityEngine.Random.Range(1, 6);//不会在这生成恶咪西
+    }
+
     /// <summary>
     /// 咪西下落
     /// </summary>
     /// <exception cref="NotImplementedException"></exception>
-    public void ApplyGravity()
+    /// <summary>
+    /// 消除后的网格重力下落算法（双指针法）
+    /// </summary>
+    public IEnumerator ApplyGravityRoutine()
     {
-        
+        bool movedAny = false;
+        int width = GridManager.Instance.GetWidth();
+        int height = GridManager.Instance.GetHeight();
+
+        // 逐列扫描
+        for (int x = 0; x < width; x++)
+        {
+            int emptySlotY = 0; // 当前列最下方的空位
+
+            // 从下往上扫描
+            for (int y = 0; y < height; y++)
+            {
+                GridPosition currentPos = new GridPosition(x, y);
+
+                // 如果当前格子里有咪西
+                if (GridManager.Instance.TryGetGridMishy(currentPos, out Mishy currentMishy))
+                {
+                    // 如果它下方有空位，就让它掉下去
+                    if (y > emptySlotY)
+                    {
+                        GridPosition targetPos = new GridPosition(x, emptySlotY);
+
+                        // 1. 逻辑层：更新网格地图
+                        GridManager.Instance.ClearGridMishy(currentPos);
+                        GridManager.Instance.SetGridMishy(targetPos, currentMishy);
+
+                        // 2. 数据层：更新咪西自己的坐标记录
+                        currentMishy.UpdateGridPosition(targetPos);
+
+                        // 3. 表现层：执行平滑下落动画 (0.15秒掉落时间)
+                        //StartCoroutine(currentMishy.SmoothMoveTo(GridManager.Instance.GetWorldPosition(targetPos), 0.15f));
+
+                        movedAny = true;
+                    }
+                    emptySlotY++; // 无论是否下落，下一格空位指针都要上移
+                }
+            }
+        }
+
+        // 如果发生了掉落，等待掉落动画播完再继续（让玩家看清连消过程）
+        if (movedAny)
+        {
+            yield return new WaitForSeconds(0.2f);
+        }
     }
 
     /// <summary>
@@ -191,5 +243,13 @@ public class MishyManager : MonoBehaviour
                     new GridPosition(0, 1), mishy);
             }
         }
+    }
+
+    /// <summary>
+    /// 消除结算完毕后，生成下一对新咪西
+    /// </summary>
+    public void SpawnNextPair()
+    {
+        mishyPreviewQueue.DequeueNextMishy();
     }
 }

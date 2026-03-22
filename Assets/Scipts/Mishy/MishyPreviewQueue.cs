@@ -22,6 +22,11 @@ public class MishyPreviewQueue : MonoBehaviour
         public MishyType type_two;
     }
 
+    private void Start()
+    {
+        MishyPreviewQueueInit();
+    }
+
     public void MishyPreviewQueueInit() 
     {
         nextMishies.Clear();

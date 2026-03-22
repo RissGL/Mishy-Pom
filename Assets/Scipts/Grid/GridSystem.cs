@@ -51,12 +51,21 @@ public class GridSystem <TGridObject>
 
     public bool TryGetGridMishy(GridPosition gridPosition,out Mishy mishy)
     {
+        if (!IsValidGridPosition(gridPosition))
+        {
+            mishy = null;
+            return false;
+        }
+
         mishy = gridObjects[gridPosition.x, gridPosition.y].GetMishy();
         return HasMishy(gridPosition);
     }
 
     public bool HasMishy(GridPosition gridPosition)
     {
+        if(!IsValidGridPosition(gridPosition))
+            return false;
+
         return gridObjects[gridPosition.x, gridPosition.y].HasMishy();
     }
 
