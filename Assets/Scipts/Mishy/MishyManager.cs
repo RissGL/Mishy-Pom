@@ -212,8 +212,7 @@ public class MishyManager : MonoBehaviour
                         // 2. 数据层：更新咪西自己的坐标记录
                         currentMishy.UpdateGridPosition(targetPos);
 
-                        // 3. 表现层：执行平滑下落动画 (0.15秒掉落时间)
-                        //StartCoroutine(currentMishy.SmoothMoveTo(GridManager.Instance.GetWorldPosition(targetPos), 0.15f));
+                        currentMishy.PlayDownAni(targetPos);
 
                         movedAny = true;
                     }
@@ -225,7 +224,7 @@ public class MishyManager : MonoBehaviour
         // 如果发生了掉落，等待掉落动画播完再继续（让玩家看清连消过程）
         if (movedAny)
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.5f);
         }
     }
 

@@ -21,7 +21,7 @@ public class MishyPlayerController : MonoBehaviour
         isActive = true;
 
         currentFallInterval = fallInterval;
-        fallTimer = 0f;
+        fallTimer = currentFallInterval;
     }
 
     private void Update()
@@ -66,9 +66,19 @@ public class MishyPlayerController : MonoBehaviour
         Vector3 targetPosOne = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
         Vector3 targetPosTwo = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
 
-        // 使用 Lerp 平滑插值 (15f 是速度，可以根据手感微调)
-        mishy_One.transform.localPosition = Vector3.Lerp(mishy_One.transform.localPosition, targetPosOne, Time.deltaTime * 15f);
-        mishy_Two.transform.localPosition = Vector3.Lerp(mishy_Two.transform.localPosition, targetPosTwo, Time.deltaTime * 15f);
+        float fallSpeed = GridManager.Instance.GetCellSize() / currentFallInterval;
+
+        // 咪西一
+        Vector3 posOne = mishy_One.transform.localPosition;
+        posOne.x = Mathf.Lerp(posOne.x, targetPosOne.x, Time.deltaTime * 15f);
+        posOne.y = Mathf.MoveTowards(posOne.y, targetPosOne.y, fallSpeed * Time.deltaTime);
+        mishy_One.transform.localPosition = posOne;
+
+        // 咪西二
+        Vector3 posTwo = mishy_Two.transform.localPosition;
+        posTwo.x = Mathf.Lerp(posTwo.x, targetPosTwo.x, Time.deltaTime * 15f);
+        posTwo.y = Mathf.MoveTowards(posTwo.y, targetPosTwo.y, fallSpeed * Time.deltaTime);
+        mishy_Two.transform.localPosition = posTwo;
     }
 
     private void TryMove(GridPosition moveDir) 
@@ -101,7 +111,7 @@ public class MishyPlayerController : MonoBehaviour
         }
         else
         {
-            // 被挡住了，或者碰到底了 -> 锁定并结算
+            // 被挡住或者碰到底 -> 锁定并结算
             LockAndSettle();
         }
     }

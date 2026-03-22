@@ -5,15 +5,13 @@ using UnityEngine;
 
 public class Mishy : MonoBehaviour
 {
-    [Header("动画系统")]
-    [SerializeField] private Animator animator;
+    [Header("视觉脚本")]
+    [SerializeField] private MishyVisual mishyVisual;
 
     public event Action<Mishy> OnMishyLanded; // 落地事件
 
     [SerializeField]private MishyType type;
     private GridPosition gridPosition;
-
-    private bool isLanded=false;
 
     public void SetUp(GridPosition gridPosition ,MishyType mishyType)
     {
@@ -29,4 +27,10 @@ public class Mishy : MonoBehaviour
     public MishyType GetMishyType() => type;
 
     public GridPosition GetGridPosition() => gridPosition;
+
+    public void PlayDownAni(GridPosition targetGridPosition)
+    {
+        mishyVisual.DownMoveAni(this.transform, targetGridPosition);
+        Debug.Log(targetGridPosition);
+    }
 }
