@@ -16,6 +16,7 @@ public class MishyVisual : MonoBehaviour
 
     private const string VANISH_TRIGGER = "Vanish";
     private const string FALL_OVER_TRIGGER = "FallOver";
+    private const string PUSH_UP_TRIGGER = "PushUp";
 
     public bool IsMoving => moveCoroutine != null;
 
@@ -58,11 +59,58 @@ public class MishyVisual : MonoBehaviour
     }
 
     /// <summary>
+    /// 向上推的动画 
+    /// </summary>
+    public void PushUpMoveAni(Transform rootTransform, GridPosition targetGridPosition,float delay)
+    {
+        Vector3 targetPosition = GridManager.Instance.GetWorldPosition(targetGridPosition);
+
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+
+        moveCoroutine = StartCoroutine(PushUpRoutine(rootTransform, targetPosition,delay));
+    }
+
+    private IEnumerator PushUpRoutine(Transform rootTransform, Vector3 targetPos, float delay)
+    {
+        if (delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
+
+        float pushSpeed = 15f;
+
+        while (Vector3.Distance(targetPos, rootTransform.localPosition) > 0.05f)
+        {
+            rootTransform.localPosition = Vector3.MoveTowards(
+                rootTransform.localPosition,
+                targetPos,
+                pushSpeed * Time.deltaTime
+            );
+
+            yield return null;
+        }
+
+        rootTransform.localPosition = targetPos;
+        moveCoroutine = null;
+
+        PlayPushUpAni();
+    }
+
+
+    /// <summary>
     /// 落地动画
     /// </summary>
     public void PlayLandEffects() 
     {
         animator.SetTrigger(FALL_OVER_TRIGGER);
+    }
+
+    public void PlayPushUpAni() 
+    {
+        animator.SetTrigger(PUSH_UP_TRIGGER);
     }
 
     /// <summary>

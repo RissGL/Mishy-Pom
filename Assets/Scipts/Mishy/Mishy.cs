@@ -55,4 +55,13 @@ public class Mishy : MonoBehaviour
     {
         mishyVisual.PlayLandEffects();
     }
+
+    /// <summary>
+    /// 推上去的动画
+    /// </summary>
+    /// <param name="targetGridPosition"></param>
+    public void PlayPushUpAni(GridPosition targetGridPosition,float delay=0)
+    {
+        mishyVisual.PushUpMoveAni(this.transform, targetGridPosition,delay);
+    }
 }

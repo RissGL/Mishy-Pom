@@ -6,32 +6,38 @@ using UnityEngine;
 public class SkillSystem : MonoBehaviour
 {
     private int columnUpCount = 0;
-    [SerializeField] private Transform skillPointVisual;
     public static event EventHandler<SkillUseInfo> OnSkillUse;
+    private SkillSystemVisual skillSystemVisual;
+
+
+    private void Start()
+    {
+        skillSystemVisual = GetComponent<SkillSystemVisual>();
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            if (columnUpCount < 1)
-            {
-                return;
-            }
-            OnSkillUse?.Invoke(this, new SkillUseInfo(false, columnUpCount));
-            columnUpCount = 0;
+            UseSkill(false);
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            if (columnUpCount < 1)
-            {
-                return;
-            }
-            OnSkillUse?.Invoke(this, new SkillUseInfo(true, columnUpCount));
-            columnUpCount = 0;
+            UseSkill(true);
         }
     }
+    public void UseSkill(bool skillType)
+    {
+        if (columnUpCount < 1)
+        {
+            return;
+        }
+        OnSkillUse?.Invoke(this, new SkillUseInfo(skillType, columnUpCount));
+        columnUpCount = 0;
 
+        skillSystemVisual.SetSkillPointVisual(false);
+    }
 
     public struct SkillUseInfo 
     {
@@ -58,8 +64,8 @@ public class SkillSystem : MonoBehaviour
     {
         columnUpCount = e / 100;
         if(columnUpCount>0)
-        { 
-            skillPointVisual.gameObject.SetActive(true);
+        {
+            skillSystemVisual.SetSkillPointVisual(true);
         }
     }
 }

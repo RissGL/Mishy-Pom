@@ -11,11 +11,21 @@ public class ScoreSystem : MonoBehaviour
     public static event EventHandler<int> OnUpdateScore;
     private const int MAX_SCORE = 999;
 
+    private const int CLEAR_BAD_MISHY_SCORE = 100;
+
     private void Start()
     {
         MatchSystem.OnMatchCleared += MatchSystem_OnMatchCleared;
         MatchSystem.OnSkillMatch += MatchSystem_OnSkillMatch;
+        MatchSystem.OnBadMishyClear += MatchSystem_OnBadMishyClear;
         SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+    }
+
+    private void MatchSystem_OnBadMishyClear(object sender, EventArgs e)
+    {
+        score += CLEAR_BAD_MISHY_SCORE;
+        score = Mathf.Min(score, MAX_SCORE);
+        OnUpdateScore?.Invoke(this, score);
     }
 
     private void MatchSystem_OnSkillMatch(object sender, int e)
@@ -34,7 +44,8 @@ public class ScoreSystem : MonoBehaviour
     private void OnDestroy()
     {
         MatchSystem.OnMatchCleared -= MatchSystem_OnMatchCleared;
-        MatchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch;
+        MatchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch; 
+        MatchSystem.OnBadMishyClear -= MatchSystem_OnBadMishyClear;
         SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 

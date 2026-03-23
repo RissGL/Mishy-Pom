@@ -11,7 +11,7 @@ public class MatchSystem : MonoBehaviour
 
     public static event EventHandler<MatchInfo> OnMatchCleared;
     public static event EventHandler<int> OnSkillMatch;
-
+    public static event EventHandler OnBadMishyClear;
 
     public class MatchInfo :EventArgs
     {
@@ -164,6 +164,11 @@ public class MatchSystem : MonoBehaviour
                 // 销毁并清理网格
                 foreach (Mishy m in matches)
                 {
+                    if (m.GetMishyType() == MishyType.BadMishy)
+                    {
+                        OnBadMishyClear?.Invoke(this, EventArgs.Empty);
+                    }
+
                     GridManager.Instance.ClearGridMishy(m.GetGridPosition());
 
                     // TODO: 咪西消灭动画

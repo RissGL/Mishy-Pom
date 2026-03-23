@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class MishyManager : MonoBehaviour
 {
@@ -31,8 +32,13 @@ public class MishyManager : MonoBehaviour
     private GridPosition SpawnGridPositionUp;
     private GridPosition SpawnGridPositionDown = new GridPosition(3, 12);
 
-    private MishyType[] currentMishyPairType=null;
+    private MishyType[] currentMishyPairType = null;
 
+
+    public int GetSpawnX()
+    {
+        return SpawnGridPositionDown.x;
+    }
 
     private void Awake()
     {
@@ -52,7 +58,7 @@ public class MishyManager : MonoBehaviour
         mishyNextPushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
 
         SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
-        SpawnGridPositionUp=new GridPosition(SpawnGridPositionDown.x,SpawnGridPositionDown.y+1);
+        SpawnGridPositionUp = new GridPosition(SpawnGridPositionDown.x, SpawnGridPositionDown.y + 1);
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
         MishyColumnUp(4);
@@ -64,7 +70,7 @@ public class MishyManager : MonoBehaviour
         {
             mishyNextPushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
         }
-        else 
+        else
         {
             currentMishyPairType = mishyPlayerController.InterruptAndClearActivePair();
             mishyMatchSystem.StartMatchBottomColumnMishy(e.matchColumnCount);
@@ -78,7 +84,7 @@ public class MishyManager : MonoBehaviour
         SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
-    private IEnumerator AsyncSpawnFirstMishyPair() 
+    private IEnumerator AsyncSpawnFirstMishyPair()
     {
         mishyPreviewQueue.DequeueNextMishy();
         yield return null;
@@ -86,10 +92,10 @@ public class MishyManager : MonoBehaviour
 
     private void MishyPreviewQueue_OnNextMishyNeedSpawn(object sender, MishyPreviewQueue.MishyPairEventArgs e)
     {
-        Mishy mishy_One= SpawnMishy(SpawnGridPositionDown, e.type_one);
-        Mishy mishy_Two= SpawnMishy(SpawnGridPositionUp, e.type_two);
+        Mishy mishy_One = SpawnMishy(SpawnGridPositionDown, e.type_one);
+        Mishy mishy_Two = SpawnMishy(SpawnGridPositionUp, e.type_two);
 
-        mishyPlayerController.SetActivePair(mishy_One,mishy_Two);
+        mishyPlayerController.SetActivePair(mishy_One, mishy_Two);
     }
 
     /// <summary>
@@ -99,7 +105,7 @@ public class MishyManager : MonoBehaviour
     /// <param name="e"></param>
     public void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[][] newRows)
     {
-        currentMishyPairType= mishyPlayerController.InterruptAndClearActivePair();
+        currentMishyPairType = mishyPlayerController.InterruptAndClearActivePair();
 
         SpawnMishyOnButtom(newRows);
 
@@ -109,7 +115,7 @@ public class MishyManager : MonoBehaviour
     /// 延迟结算
     /// </summary>
     /// <returns></returns>
-    public IEnumerator DelayedSettlement() 
+    public IEnumerator DelayedSettlement()
     {
         //该处逻辑可能要修改，不太行
         yield return new WaitUntil(() => !CheckAllMishyMoveState());
@@ -133,8 +139,17 @@ public class MishyManager : MonoBehaviour
         {
             for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
             {
+                GridPosition targetPos = new GridPosition(x, y);
+
                 Mishy mishy = SpawnAndSetMishy(new GridPosition(x, y), newRows[y][x]);
-                mishy.PlayLandAni();
+
+                GridPosition startVisualPos = new GridPosition(x, y - rowCount);
+                mishy.transform.localPosition = GridManager.Instance.GetWorldPosition(startVisualPos);
+
+                float delay =GetRandomDelay(x,y);
+
+                //float delay = UnityEngine.Random.Range(0,0.15f);
+                mishy.PlayPushUpAni(targetPos, delay);
             }
         }
         StartCoroutine(DelayedSettlement());
@@ -346,10 +361,24 @@ public class MishyManager : MonoBehaviour
 
                     m.UpdateGridPosition(targetPos);
 
-                    m.PlayDownAni(targetPos);
+                    float delay = GetRandomDelay(x,y);
+                    //float delay = UnityEngine.Random.Range(0, 0.15f);
+                    m.PlayPushUpAni(targetPos, delay);
+
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// 用于得到不同的push延迟动画模式
+    /// </summary>
+    /// <returns></returns>
+    public float GetRandomDelay(int x,int y)
+    {
+        float delay = (x * 0.02f) + (y * 0.015f);
+        //float delay = UnityEngine.Random.Range(0, 0.15f);
+        return delay;
     }
 
     /// <summary>
@@ -379,5 +408,7 @@ public class MishyManager : MonoBehaviour
     {
         mishyNextPushUpColumn.PushMultiColumnMishyUp(count);
     }
+
+
 }
 

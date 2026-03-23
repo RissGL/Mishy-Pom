@@ -10,10 +10,14 @@ public class MishyPlayerController : MonoBehaviour
 
     [Header("下落节奏设置")]
     [SerializeField] private float fallInterval = 1.0f;     // 正常下落速度
-    [SerializeField] private float fastFallInterval = 0.3f;// 加速下落速度
+    [SerializeField] private float fastFallInterval = 0.05f;// 加速下落速度
+    [SerializeField] private float autoFastFallDelay = 0.18f; // 缓冲时间
+
+    [SerializeField] private GameObject promptBar;
 
     private float fallTimer;
     private float currentFallInterval;
+    private float autoFastFallTimer;//缓冲时间计时器
 
     private float moveSpeed=15f;
 
@@ -25,6 +29,10 @@ public class MishyPlayerController : MonoBehaviour
 
         currentFallInterval = fallInterval;
         fallTimer = currentFallInterval;
+        autoFastFallTimer = autoFastFallDelay;
+
+        promptBar.SetActive(true);
+        promptBar.transform.position = GridManager.Instance.GetWorldPosition(new GridPosition(MishyManager.Instance.GetSpawnX(),0));
     }
 
     private void Update()
@@ -51,8 +59,18 @@ public class MishyPlayerController : MonoBehaviour
             SwapMishies();
         }
 
-        bool isHoldingS=Input.GetKey(KeyCode.S);
-        float targetFallInterval=isHoldingS ? fastFallInterval : fallInterval;
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            autoFastFallTimer = 0;
+        }
+
+
+        if (autoFastFallTimer>0f)
+        {
+            autoFastFallTimer-=Time.deltaTime;
+        }
+        bool isHoldingS = Input.GetKey(KeyCode.S)&&autoFastFallTimer<=0;
+        float targetFallInterval =isHoldingS ? fastFallInterval : fallInterval;
 
         //利用百分比同步下落进度
         if (currentFallInterval != targetFallInterval)
@@ -120,6 +138,9 @@ public class MishyPlayerController : MonoBehaviour
         {
             ExecuteMove(nextPosOne, nextPosTwo);
             // TODO: 播放平移音效 (Swoosh)
+
+            promptBar.transform.position =GridManager.Instance.GetWorldPosition( new GridPosition(nextPosOne.x, 0));
+
         }
         else
         {
@@ -198,6 +219,8 @@ public class MishyPlayerController : MonoBehaviour
         mishy_One.PlayLandAni();
         mishy_Two.PlayLandAni();
 
+        promptBar.gameObject.SetActive(false);
+
         GridManager.Instance.SetGridMishy(mishy_One.GetGridPosition(), mishy_One);
         GridManager.Instance.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
 
@@ -216,6 +239,8 @@ public class MishyPlayerController : MonoBehaviour
         }
 
         isActive = false;
+
+        promptBar.SetActive(false);
 
         MishyType[] mishyTypes=new MishyType[2];
 
