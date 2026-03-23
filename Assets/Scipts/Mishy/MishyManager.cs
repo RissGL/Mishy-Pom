@@ -50,16 +50,32 @@ public class MishyManager : MonoBehaviour
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
         mishyNextPushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
+
+        SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
         SpawnGridPositionUp=new GridPosition(SpawnGridPositionDown.x,SpawnGridPositionDown.y+1);
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
         MishyColumnUp(4);
     }
 
+    private void SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)
+    {
+        if (e.isUpToEnemy)
+        {
+            mishyNextPushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
+        }
+        else 
+        {
+            currentMishyPairType = mishyPlayerController.InterruptAndClearActivePair();
+            mishyMatchSystem.StartMatchBottomColumnMishy(e.matchColumnCount);
+        }
+    }
+
     private void OnDestroy()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn -= MishyPreviewQueue_OnNextMishyNeedSpawn;
         mishyNextPushUpColumn.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
+        SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
     private IEnumerator AsyncSpawnFirstMishyPair() 

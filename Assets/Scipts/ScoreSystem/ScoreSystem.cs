@@ -14,11 +14,28 @@ public class ScoreSystem : MonoBehaviour
     private void Start()
     {
         MatchSystem.OnMatchCleared += MatchSystem_OnMatchCleared;
+        MatchSystem.OnSkillMatch += MatchSystem_OnSkillMatch;
+        SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+    }
+
+    private void MatchSystem_OnSkillMatch(object sender, int e)
+    {
+        score += e;
+        score = Mathf.Min(score, MAX_SCORE);
+        OnUpdateScore?.Invoke(this, score);
+    }
+
+    private void SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)
+    {
+        score = 0;
+        OnUpdateScore?.Invoke(this, score);
     }
 
     private void OnDestroy()
     {
         MatchSystem.OnMatchCleared -= MatchSystem_OnMatchCleared;
+        MatchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch;
+        SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
     private void MatchSystem_OnMatchCleared(object sender, MatchSystem.MatchInfo e)
@@ -39,7 +56,6 @@ public class ScoreSystem : MonoBehaviour
         }
 
         score = Mathf.Min(score, MAX_SCORE);
-        Debug.Log(score);
         OnUpdateScore?.Invoke(this, score);
     }
 }

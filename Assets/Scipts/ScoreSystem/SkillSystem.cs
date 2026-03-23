@@ -7,11 +7,42 @@ public class SkillSystem : MonoBehaviour
 {
     private int columnUpCount = 0;
     [SerializeField] private Transform skillPointVisual;
-    public static event EventHandler OnSkillUse;
+    public static event EventHandler<SkillUseInfo> OnSkillUse;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (columnUpCount < 1)
+            {
+                return;
+            }
+            OnSkillUse?.Invoke(this, new SkillUseInfo(false, columnUpCount));
+            columnUpCount = 0;
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            if (columnUpCount < 1)
+            {
+                return;
+            }
+            OnSkillUse?.Invoke(this, new SkillUseInfo(true, columnUpCount));
+            columnUpCount = 0;
+        }
+    }
+
 
     public struct SkillUseInfo 
     {
-        bool isUpToEnemy;//是否是让敌人上升
+        public SkillUseInfo(bool isUpToEnemy,int columnCount)
+        {
+            this.isUpToEnemy = isUpToEnemy;
+            this.matchColumnCount = columnCount;
+        }
+
+        public bool isUpToEnemy;//是否是让敌人上升
+        public int matchColumnCount;
     }
 
     private void OnEnable()

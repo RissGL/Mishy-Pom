@@ -10,6 +10,8 @@ public class MatchSystem : MonoBehaviour
     public bool IsMatching { get; private set; }
 
     public static event EventHandler<MatchInfo> OnMatchCleared;
+    public static event EventHandler<int> OnSkillMatch;
+
 
     public class MatchInfo :EventArgs
     {
@@ -192,5 +194,43 @@ public class MatchSystem : MonoBehaviour
         }
 
         return points/mishies.Count;
+    }
+
+    public void StartMatchBottomColumnMishy(int count)
+    {
+        if (IsMatching)
+            return;
+        StartCoroutine(MatchBottomColumnMishy(count));
+    }
+
+    public IEnumerator MatchBottomColumnMishy(int count) 
+    {
+        int matchScore = 0;
+        IsMatching=true;
+
+        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        {
+            for (int y = 0; y < count; y++) 
+            {
+                GridPosition gridPosition=new GridPosition(x,y);
+
+                if (GridManager.Instance.TryGetGridMishy(gridPosition, out Mishy mishy))
+                {
+                    GridManager.Instance.ClearGridMishy(mishy.GetGridPosition());
+                    mishy.PlayVanishAni();
+                    matchScore++;
+                    Destroy(mishy.gameObject, 0.4f);
+                }
+
+
+            }
+        }
+        OnSkillMatch?.Invoke(this, matchScore);
+
+        yield return new WaitForSeconds(0.4f);
+
+        yield return StartCoroutine(MishyManager.Instance.ApplyGravityRoutine());
+        MishyManager.Instance.SpawnNextPair();
+        IsMatching = false;
     }
 }
