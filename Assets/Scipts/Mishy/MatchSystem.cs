@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,15 +7,29 @@ using static UnityEditor.PlayerSettings;
 public class MatchSystem : MonoBehaviour
 {
     private int currentCombo =0;
-    public const int MAX_COMBO_COUNT = 6;
-
     public bool IsMatching { get; private set; }
+
+    public static event EventHandler<MatchInfo> OnMatchCleared;
+
+    public class MatchInfo :EventArgs
+    {
+        public MatchInfo(int matchCount, int matchCombo,Vector3 matchCenter) 
+        {
+            this.matchCount = matchCount;
+            this.matchCombo = matchCombo;
+            this.matchCenter = matchCenter;
+        }
+
+        public int matchCount;
+        public int matchCombo;
+        public Vector3 matchCenter;
+    }
 
 
     // 返回所有符合消除条件的咪西集合
-    public List<Mishy> FindAllMatches()
+    public List<List<Mishy>> FindAllMatches()
     {
-        List<Mishy> allMatches=new List<Mishy>();
+        List<List<Mishy>> allMatches=new List<List<Mishy>>();
         bool[,] visited = new bool[GridManager.Instance.GetWidth(),
             GridManager.Instance.GetHeight()];
 
@@ -30,7 +45,7 @@ public class MatchSystem : MonoBehaviour
 
                     if (connectedMishyies.Count >= 3)
                     {
-                        allMatches.AddRange(connectedMishyies);
+                        allMatches.Add(connectedMishyies);
                     }
                 }
             }
@@ -127,9 +142,9 @@ public class MatchSystem : MonoBehaviour
         currentCombo = 1;
         while (true)
         {
-            List<Mishy> matches = FindAllMatches();
+            List<List<Mishy>> mishyGroups = FindAllMatches();
 
-            if (matches.Count == 0)
+            if (mishyGroups.Count == 0)
             {
                 // 没有任何消除，结算结束，重置 Combo
                 currentCombo = 0;
@@ -140,21 +155,20 @@ public class MatchSystem : MonoBehaviour
                 yield break; // 结束协程
             }
 
-            // 计算分数
-            int multiplier = Mathf.Min(currentCombo, MAX_COMBO_COUNT);
-            int score = matches.Count * 10 * multiplier;
-            Debug.Log($"消除了 {matches.Count} 个，连击数 {currentCombo}，获得分数：{score}");
-
-            // 销毁并清理网格
-            foreach (Mishy m in matches)
+            foreach (var matches in mishyGroups)
             {
-                GridManager.Instance.ClearGridMishy(m.GetGridPosition());
+                OnMatchCleared?.Invoke(this, new MatchInfo(matches.Count,currentCombo,GetMatchCenter(matches)));
 
-                // TODO: 咪西消灭动画
-                m.PlayVanishAni();
+                // 销毁并清理网格
+                foreach (Mishy m in matches)
+                {
+                    GridManager.Instance.ClearGridMishy(m.GetGridPosition());
 
+                    // TODO: 咪西消灭动画
+                    m.PlayVanishAni();
 
-                Destroy(m.gameObject,0.4f);
+                    Destroy(m.gameObject, 0.4f);
+                }
             }
 
             // 等待半秒钟
@@ -166,5 +180,17 @@ public class MatchSystem : MonoBehaviour
             // 连击数增加，进入下一次循环
             currentCombo++;
         }
+    }
+
+    public Vector3 GetMatchCenter(List<Mishy> mishies) 
+    {
+        Vector3 points=Vector3.zero;
+
+        for (int i = 0; i <mishies.Count; i++) 
+        {
+            points += mishies[i].transform.position;
+        }
+
+        return points/mishies.Count;
     }
 }

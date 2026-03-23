@@ -49,24 +49,23 @@ public class MishyManager : MonoBehaviour
     private void Start()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
-        mishyNextPushUpColumn.OnMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
+        mishyNextPushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
         SpawnGridPositionUp=new GridPosition(SpawnGridPositionDown.x,SpawnGridPositionDown.y+1);
-
-        mishyNextPushUpColumn.NextPushUpColumnMishyInit();
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
+        MishyColumnUp(4);
     }
 
     private void OnDestroy()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn -= MishyPreviewQueue_OnNextMishyNeedSpawn;
-        mishyNextPushUpColumn.OnMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
+        mishyNextPushUpColumn.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
     }
 
     private IEnumerator AsyncSpawnFirstMishyPair() 
     {
-        yield return null;
         mishyPreviewQueue.DequeueNextMishy();
+        yield return null;
     }
 
     private void MishyPreviewQueue_OnNextMishyNeedSpawn(object sender, MishyPreviewQueue.MishyPairEventArgs e)
@@ -82,11 +81,11 @@ public class MishyManager : MonoBehaviour
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[] e)
+    public void NextPushUpColumnMishy_OnMishyPushUp(object sender, MishyType[][] newRows)
     {
         currentMishyPairType= mishyPlayerController.InterruptAndClearActivePair();
 
-        SpawnMishyOnButtom(e);
+        SpawnMishyOnButtom(newRows);
 
     }
 
@@ -109,15 +108,16 @@ public class MishyManager : MonoBehaviour
     /// <summary>
     /// 底部生成咪西
     /// </summary>
-    /// <param name="count"></param>
-    public void SpawnMishyOnButtom(MishyType[] mishyTypes, int count = 1)
+    /// <param name="rowCount"></param>
+    public void SpawnMishyOnButtom(MishyType[][] newRows)
     {
-        PushAllMishyUp(count);
-        for (int y = 0; y < count; y++)
+        int rowCount = newRows.Length;
+        PushAllMishyUp(rowCount);
+        for (int y = 0; y < rowCount; y++)
         {
-            for (int x = 0; x < mishyTypes.Length; x++)
+            for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
             {
-                Mishy mishy = SpawnAndSetMishy(new GridPosition(x, y), mishyTypes[x]);
+                Mishy mishy = SpawnAndSetMishy(new GridPosition(x, y), newRows[y][x]);
                 mishy.PlayLandAni();
             }
         }
@@ -359,9 +359,9 @@ public class MishyManager : MonoBehaviour
     /// <summary>
     /// 用作测试
     /// </summary>
-    public void MishyColumnUp() 
+    public void MishyColumnUp(int count) 
     {
-        mishyNextPushUpColumn.PushColumnMishyUp();
+        mishyNextPushUpColumn.PushMultiColumnMishyUp(count);
     }
 }
 

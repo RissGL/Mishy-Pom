@@ -41,7 +41,6 @@ public class Mishy : MonoBehaviour
     public void PlayDownAni(GridPosition targetGridPosition)
     {
         mishyVisual.DownMoveAni(this.transform, targetGridPosition);
-        Debug.Log(targetGridPosition);
     }
 
     public void PlayVanishAni() 

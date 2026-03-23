@@ -132,4 +132,21 @@ public class GridManager : MonoBehaviour
     {
         gridSystem.ClearGridMishy(gridPosition);
     }
+
+    public MishyType[,] GetRowMishyType(int rowCount =1) 
+    {
+        MishyType[,] mishyTypes = new MishyType[width,rowCount];
+        for (int y = 0; y < rowCount; y++) 
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (TryGetGridMishy(new GridPosition(x,y),out Mishy mishy))
+                {
+                    mishyTypes[x,y]=mishy.GetMishyType();
+                }
+            }
+        }
+
+        return mishyTypes;
+    }
 }

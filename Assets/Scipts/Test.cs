@@ -10,7 +10,9 @@ public class Test : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
-            MishyManager.Instance.MishyColumnUp();
+            MishyManager.Instance.MishyColumnUp(2);
         }
     }
+
+    
 }
