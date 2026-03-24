@@ -29,11 +29,26 @@ public class MishyManager : MonoBehaviour
     [Header("消除系统")]
     [SerializeField] private MatchSystem mishyMatchSystem;
 
+    [Header("生存压力")]
+    [SerializeField] private float basePushUpChance = 10f;    //基础概率
+    [SerializeField] private float maxPushUpChance = 20f;     //最大推上来的概率
+    [SerializeField] private float chanceUpPerHalfMinute = 2.5f;//每半分钟增加的概率
+    [SerializeField] private float gameTimer = 0f;            //游戏时长记时
+
     private GridPosition SpawnGridPositionUp;
     private GridPosition SpawnGridPositionDown = new GridPosition(3, 12);
 
     private MishyType[] currentMishyPairType = null;
 
+    private int thisTurnUpCount=0;
+
+    public event EventHandler<int> OnTurnPushNumUpdate;//更新推上来行数UI用的事件
+
+
+    private void Update()
+    {
+        gameTimer += Time.deltaTime;
+    }
 
     public int GetSpawnX()
     {
@@ -397,6 +412,7 @@ public class MishyManager : MonoBehaviour
         }
         else 
         {
+            CalculateNextPressure();
             mishyPreviewQueue.DequeueNextMishy(); 
         }
     }
@@ -409,6 +425,41 @@ public class MishyManager : MonoBehaviour
         mishyNextPushUpColumn.PushMultiColumnMishyUp(count);
     }
 
+    /// <summary>
+    ///单次下落后回合判定 
+    /// </summary>
+    public void OnTurnSettlementFinished() 
+    {
+        if (thisTurnUpCount > 0) 
+        {
+            int rowCoumt=thisTurnUpCount;
 
+            thisTurnUpCount=0;
+            mishyNextPushUpColumn.PushMultiColumnMishyUp(rowCoumt);
+            OnTurnPushNumUpdate?.Invoke(this, 0);
+            return;
+        }
+        SpawnNextPair();
+    }
+
+    /// <summary>
+    /// 计算推出去概率
+    /// </summary>
+    private void CalculateNextPressure() 
+    {
+        float chance = (gameTimer / 30f) * chanceUpPerHalfMinute + basePushUpChance;
+        chance = Mathf.Min(chance, maxPushUpChance);
+
+        if (UnityEngine.Random.Range(1f, 100f) < chance)
+        {
+            int maxTurnUpCopunt = 2;
+            thisTurnUpCount = UnityEngine.Random.Range(10, maxTurnUpCopunt*10+2)/10;//调整一次上来两排的概率
+        }
+        else 
+        {
+            thisTurnUpCount = 0;
+        }
+        OnTurnPushNumUpdate?.Invoke(this,thisTurnUpCount);
+    }
 }
 

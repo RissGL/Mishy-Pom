@@ -151,7 +151,8 @@ public class MatchSystem : MonoBehaviour
                 // 没有任何消除，结算结束，重置 Combo
                 currentCombo = 0;
 
-                MishyManager.Instance.SpawnNextPair();
+                //MishyManager.Instance.SpawnNextPair();
+                MishyManager.Instance.OnTurnSettlementFinished();
 
                 IsMatching = false;
                 yield break; // 结束协程
@@ -235,7 +236,8 @@ public class MatchSystem : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
 
         yield return StartCoroutine(MishyManager.Instance.ApplyGravityRoutine());
-        MishyManager.Instance.SpawnNextPair();
+        //MishyManager.Instance.SpawnNextPair();
+        MishyManager.Instance.OnTurnSettlementFinished();
         IsMatching = false;
     }
 }
