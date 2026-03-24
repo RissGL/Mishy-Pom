@@ -100,8 +100,6 @@ public class MishyPreviewQueueUI : MonoBehaviour
         // 因为队列推出和压入是同时发生的，统一在压入时更新视觉最连贯。
     }
 
-    #region 神级魔法：物理预制体转纯净 UI
-
     private GameObject SpawnPureUINode(MishyType type)
     {
         // 1. 创建一个干净的空物体
@@ -132,10 +130,7 @@ public class MishyPreviewQueueUI : MonoBehaviour
         return uiNode;
     }
 
-    #endregion
-
     #region 动画协程库 (使用 Cubic Ease-Out 平滑曲线)
-
     private IEnumerator AnimateOutRoutine(GameObject node)
     {
         RectTransform rect = node.GetComponent<RectTransform>();

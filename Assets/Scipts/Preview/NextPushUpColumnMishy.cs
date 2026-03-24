@@ -9,7 +9,8 @@ public class NextPushUpColumnMishy : MonoBehaviour
     private MishyType[] previewMishies;
 
 
-    public event EventHandler<MishyType[][]> OnMultiMishyPushUp;
+    public static event EventHandler<MishyType[][]> OnMultiMishyPushUp;
+    public static event EventHandler<MishyType[]> OnUpdateSingleRow;
 
     private void Start()
     {
@@ -84,5 +85,6 @@ public class NextPushUpColumnMishy : MonoBehaviour
                 gridBottomRow[x] = (MishyType)999; // 给个不会冲突的假类型
         }
         previewMishies = GenerateSingleRow(gridBottomRow);
+        OnUpdateSingleRow?.Invoke(this, previewMishies);
     }
 }

@@ -70,7 +70,7 @@ public class MishyManager : MonoBehaviour
     private void Start()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
-        mishyNextPushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
+        NextPushUpColumnMishy.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
 
         SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
         SpawnGridPositionUp = new GridPosition(SpawnGridPositionDown.x, SpawnGridPositionDown.y + 1);
@@ -95,7 +95,7 @@ public class MishyManager : MonoBehaviour
     private void OnDestroy()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn -= MishyPreviewQueue_OnNextMishyNeedSpawn;
-        mishyNextPushUpColumn.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
+        NextPushUpColumnMishy.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
         SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
