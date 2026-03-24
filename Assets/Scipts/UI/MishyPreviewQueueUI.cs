@@ -1,10 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // 必须引入 UI
 
 public class MishyPreviewQueueUI : MonoBehaviour
 {
     [SerializeField] private MishyPreviewQueue previewQueue;
+    [SerializeField] private MishyDatabase database; // 引入数据库来获取外观
+    [SerializeField] private RectTransform container; // 存放队列 UI 的父节点
+
+    [Header("UI 动画设置")]
+    [SerializeField] private float spacing = 100f;       // 每个咪西的上下间距
+    [SerializeField] private float slideOffset = 200f;   // 侧边划入的 X 轴起始偏移量
+    [SerializeField] private float animDuration = 0.3f;  // 动画时长
+    [SerializeField] private float spriteSize = 100f;
+
+
+    // 记录当前屏幕上活着的 UI 节点
+    private List<GameObject> activeUINodes = new List<GameObject>();
 
     private void Start()
     {
@@ -22,13 +35,178 @@ public class MishyPreviewQueueUI : MonoBehaviour
 
     private void PreviewQueue_OnPreviewQueueInit(object sender, System.EventArgs e)
     {
+        // 1. 清理旧节点
+        foreach (var node in activeUINodes)
+        {
+            if (node != null) Destroy(node);
+        }
+        activeUINodes.Clear();
+
+        // 2. 初始化排队生成
+        Queue<MishyType> initialQueue = previewQueue.GetAllNextMishy();
+        int index = 0;
+        foreach (var type in initialQueue)
+        {
+            GameObject uiNode = SpawnPureUINode(type);
+            RectTransform rect = uiNode.GetComponent<RectTransform>();
+
+            // 初始时直接放到目标位置，不需要动画
+            rect.anchoredPosition = new Vector2(0, -index * spacing);
+            activeUINodes.Add(uiNode);
+            index++;
+        }
     }
 
-    private void PreviewQueue_OnNextMishyDequeue(object sender, Queue<MishyType> e)
+    private void PreviewQueue_OnNextMishyDequeue(object sender, Queue<MishyType> newTwoMishies)
     {
+        // 1. 顶部 2 个旧节点飞天并消失
+        if (activeUINodes.Count >= 2)
+        {
+            GameObject top1 = activeUINodes[0];
+            GameObject top2 = activeUINodes[1];
+
+            // 从活跃列表中移除它们
+            activeUINodes.RemoveAt(0);
+            activeUINodes.RemoveAt(0);
+
+            // 播放离场动画（往上走两个格子并变透明）
+            StartCoroutine(AnimateOutRoutine(top1));
+            StartCoroutine(AnimateOutRoutine(top2));
+        }
+
+        // 2. 存活的老节点依次往上顶 2 个位置
+        for (int i = 0; i < activeUINodes.Count; i++)
+        {
+            Vector2 targetPos = new Vector2(0, -i * spacing);
+            StartCoroutine(AnimateShiftRoutine(activeUINodes[i], targetPos));
+        }
+
+        // 3. 底部生成 2 个新节点，从侧边滑入并变亮
+        int startIndex = activeUINodes.Count;
+        foreach (var type in newTwoMishies)
+        {
+            GameObject newNode = SpawnPureUINode(type);
+            activeUINodes.Add(newNode);
+
+            Vector2 targetPos = new Vector2(0, -startIndex * spacing);
+            StartCoroutine(AnimateInRoutine(newNode, targetPos));
+            startIndex++;
+        }
     }
 
     private void PreviewQueue_OnNextMishyNeedSpawn(object sender, MishyPreviewQueue.MishyPairEventArgs e)
     {
+        // 这里的逻辑已经合并在 OnNextMishyDequeue 里一并做完了，可以留空。
+        // 因为队列推出和压入是同时发生的，统一在压入时更新视觉最连贯。
     }
+
+    #region 神级魔法：物理预制体转纯净 UI
+
+    private GameObject SpawnPureUINode(MishyType type)
+    {
+        // 1. 创建一个干净的空物体
+        GameObject uiNode = new GameObject("UIPreview_" + type.ToString());
+        uiNode.transform.SetParent(container, false); // 设为容器的子物体
+
+        // 2. 赋予 UI 属性
+        RectTransform rect = uiNode.AddComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(spriteSize, spriteSize); // 这里根据你的 UI 画布大小自己调
+
+        Image img = uiNode.AddComponent<Image>();
+
+        // 3. 添加 CanvasGroup 用于控制透明度（Alpha 0~1）
+        uiNode.AddComponent<CanvasGroup>();
+
+        // 4. 从你的物理预制体上“偷”贴图！
+        GameObject prefab = database.GetPrefab(type);
+        if (prefab != null)
+        {
+            SpriteRenderer sr = prefab.GetComponentInChildren<SpriteRenderer>();
+            if (sr != null)
+            {
+                img.sprite = sr.sprite;
+                img.color = sr.color;
+            }
+        }
+
+        return uiNode;
+    }
+
+    #endregion
+
+    #region 动画协程库 (使用 Cubic Ease-Out 平滑曲线)
+
+    private IEnumerator AnimateOutRoutine(GameObject node)
+    {
+        RectTransform rect = node.GetComponent<RectTransform>();
+        CanvasGroup cg = node.GetComponent<CanvasGroup>();
+
+        Vector2 startPos = rect.anchoredPosition;
+        // 目标位置：往上飞出两个身位
+        Vector2 targetPos = startPos + new Vector2(0, spacing * 2);
+
+        float elapsed = 0;
+        while (elapsed < animDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animDuration;
+            float easeT = 1f - Mathf.Pow(1f - t, 3f); // 让动画起步快，结尾柔和
+
+            rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, easeT);
+            cg.alpha = Mathf.Lerp(1f, 0f, t); // 透明度 255 -> 0 (在 CanvasGroup 里是 1 -> 0)
+
+            yield return null;
+        }
+
+        // 动画播完后彻底销毁
+        Destroy(node);
+    }
+
+    private IEnumerator AnimateShiftRoutine(GameObject node, Vector2 targetPos)
+    {
+        RectTransform rect = node.GetComponent<RectTransform>();
+        Vector2 startPos = rect.anchoredPosition;
+
+        float elapsed = 0;
+        while (elapsed < animDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animDuration;
+            float easeT = 1f - Mathf.Pow(1f - t, 3f);
+
+            rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, easeT);
+            yield return null;
+        }
+
+        rect.anchoredPosition = targetPos;
+    }
+
+    private IEnumerator AnimateInRoutine(GameObject node, Vector2 targetPos)
+    {
+        RectTransform rect = node.GetComponent<RectTransform>();
+        CanvasGroup cg = node.GetComponent<CanvasGroup>();
+
+        // 起点设在目标位置的正右方 (侧边划入)
+        Vector2 startPos = targetPos + new Vector2(slideOffset, 0);
+        rect.anchoredPosition = startPos;
+        cg.alpha = 0f; // 初始全透明
+
+        float elapsed = 0;
+        while (elapsed < animDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animDuration;
+            float easeT = 1f - Mathf.Pow(1f - t, 3f);
+
+            rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, easeT);
+            cg.alpha = Mathf.Lerp(0f, 1f, t); // 逐渐显示出来
+
+            yield return null;
+        }
+
+        rect.anchoredPosition = targetPos;
+        cg.alpha = 1f;
+    }
+
+    #endregion
 }

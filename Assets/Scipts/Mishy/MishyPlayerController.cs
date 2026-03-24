@@ -19,7 +19,13 @@ public class MishyPlayerController : MonoBehaviour
     private float currentFallInterval;
     private float autoFastFallTimer;//缓冲时间计时器
 
-    private float moveSpeed=15f;
+    private Vector3 ghostVector3Top;
+    private Vector3 ghostVector3Bottom;
+
+    private float swapTimer=0f;
+    [SerializeField]private float swapDuration=0.15f;
+
+    private float moveSpeed=30f;//左右移动的速度
 
     public void SetActivePair(Mishy mishy_One, Mishy mishy_Two)
     {
@@ -32,7 +38,12 @@ public class MishyPlayerController : MonoBehaviour
         autoFastFallTimer = autoFastFallDelay;
 
         promptBar.SetActive(true);
-        promptBar.transform.position = GridManager.Instance.GetWorldPosition(new GridPosition(MishyManager.Instance.GetSpawnX(),0));
+        promptBar.transform.position = GridManager.Instance.GetWorldPosition
+            (new GridPosition(MishyManager.Instance.GetSpawnX(),0));
+
+        ghostVector3Bottom = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
+        ghostVector3Top = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
+
     }
 
     private void Update()
@@ -113,7 +124,34 @@ public class MishyPlayerController : MonoBehaviour
 
         float fallSpeed = (float)GridManager.Instance.GetCellSize() / currentFallInterval;
 
-        
+        ghostVector3Top.x = Mathf.Lerp(ghostVector3Top.x, targetPosTwo.x, Time.deltaTime * moveSpeed);
+        ghostVector3Top.y= Mathf.MoveTowards(ghostVector3Top.y, targetPosTwo.y, Time.deltaTime * fallSpeed);
+
+        ghostVector3Bottom.x = Mathf.Lerp(ghostVector3Bottom.x, targetPosOne.x, Time.deltaTime * moveSpeed);
+        ghostVector3Bottom.y = Mathf.MoveTowards(ghostVector3Bottom.y, targetPosOne.y, Time.deltaTime * fallSpeed);
+
+        if (swapTimer > 0f)
+        {
+            swapTimer -= Time.deltaTime;
+            float t = 1.0f - swapTimer / swapDuration;
+
+            float arc = 0.7f;//转的弧度
+            float arcOffset = (float)GridManager.Instance.GetCellSize()*arc*Mathf.Sin(Mathf.PI * t);
+            Vector3 posOne = Vector3.Lerp(ghostVector3Top, ghostVector3Bottom, t);
+            posOne.x += arcOffset; 
+            mishy_One.transform.localPosition = posOne;
+
+            Vector3 posTwo = Vector3.Lerp(ghostVector3Bottom, ghostVector3Top, t);
+            posTwo.x -= arcOffset;
+            mishy_Two.transform.localPosition = posTwo;
+        }
+        else 
+        {
+            mishy_One.transform.localPosition = ghostVector3Bottom;
+            mishy_Two.transform.localPosition = ghostVector3Top;
+        }
+
+        /*
         // 咪西一
         Vector3 posOne = mishy_One.transform.localPosition;
         posOne.x = Mathf.Lerp(posOne.x, targetPosOne.x, Time.deltaTime * moveSpeed);
@@ -125,6 +163,7 @@ public class MishyPlayerController : MonoBehaviour
         posTwo.x = Mathf.Lerp(posTwo.x, targetPosTwo.x, Time.deltaTime * moveSpeed);
         posTwo.y = Mathf.MoveTowards(posTwo.y, targetPosTwo.y, fallSpeed * Time.deltaTime);
         mishy_Two.transform.localPosition = posTwo;
+        */
         
     }
 
@@ -195,9 +234,11 @@ public class MishyPlayerController : MonoBehaviour
 
     private void SwapMishies() 
     {
+        /*
         Vector3 temp = mishy_One.transform.localPosition;
         mishy_One.transform.localPosition = mishy_Two.transform.localPosition;
         mishy_Two.transform.localPosition=temp;
+        */
 
         GridPosition tempGrid = mishy_One.GetGridPosition();
         mishy_One.UpdateGridPosition(mishy_Two.GetGridPosition());
@@ -207,6 +248,8 @@ public class MishyPlayerController : MonoBehaviour
         Mishy tempMishy=mishy_One;
         mishy_One = mishy_Two;
         mishy_Two = tempMishy;
+
+        swapTimer = swapDuration;
     }
 
     private void LockAndSettle()

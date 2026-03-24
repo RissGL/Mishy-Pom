@@ -372,6 +372,20 @@ public class MishyManager : MonoBehaviour
                     GridPosition moveDir = new GridPosition(0, rowCount);
                     GridPosition targetPos = currentPos + moveDir;
 
+                    if (!GridManager.Instance.IsValidGridPosition(targetPos))
+                    {
+                        // 被顶出最高点了
+                        GridManager.Instance.ClearGridMishy(currentPos);
+
+                        m.PlayVanishAni(); // 或者直接 Destroy(m.gameObject);
+
+                        // TODO: 在这里触发“游戏结束 (GameOver)
+                        Debug.LogWarning("游戏结束：咪西被顶出天花板了！");
+
+                        continue; 
+                    }
+
+
                     GridManager.Instance.MoveMishyWithGridPosition(currentPos, moveDir, m);
 
                     m.UpdateGridPosition(targetPos);
