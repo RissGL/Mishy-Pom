@@ -1404,7 +1404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollSpeed: 3
   animDuration: 0.3
-  stayDuration: 1
+  stayDuration: 0.9
   Bg: {fileID: 1197969480}
 --- !u!114 &644960602
 MonoBehaviour:
@@ -4008,7 +4008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollSpeed: 3
   animDuration: 0.3
-  stayDuration: 1
+  stayDuration: 0.9
   Bg: {fileID: 1197969480}
 --- !u!1 &1797292711
 GameObject:

@@ -44,7 +44,7 @@ public class ScoreUI : MonoBehaviour
     private IEnumerator ScoreRolling()
     {
         int startScore = screenScore;
-        float duration = 0.3f+(trueScore-screenScore)/60f; // 总时长
+        float duration = 0.3f+(trueScore-screenScore)/80f; // 总时长
         float elapsed = 0f;    // 已消耗时间
 
         while (elapsed < duration) 
