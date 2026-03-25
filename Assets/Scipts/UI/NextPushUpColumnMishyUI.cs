@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class NextPushUpColumnMishyUI : MonoBehaviour
 {
+    [SerializeField] private PlayerBoard board;
+
     [SerializeField] private MishyDatabase database; // 引入数据库来获取外观
     [SerializeField] private RectTransform container; // 存放队列 UI 的父节点
 
@@ -13,9 +15,9 @@ public class NextPushUpColumnMishyUI : MonoBehaviour
 
     [SerializeField] private float animDuration = 0.3f;  // 动画时长
 
-    private void Start()
+    private void Awake()
     {
-        NextPushUpColumnMishy.OnUpdateSingleRow += NextPushUpColumnMishy_OnUpdateSingleRow;
+        board.pushUpColumn.OnUpdateSingleRow += NextPushUpColumnMishy_OnUpdateSingleRow;
     }
 
     private void NextPushUpColumnMishy_OnUpdateSingleRow(object sender, MishyType[] newRow)
@@ -91,8 +93,7 @@ public class NextPushUpColumnMishyUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        NextPushUpColumnMishy.OnUpdateSingleRow -= NextPushUpColumnMishy_OnUpdateSingleRow;
+        board.pushUpColumn.OnUpdateSingleRow -= NextPushUpColumnMishy_OnUpdateSingleRow;
     }
-
 
 }

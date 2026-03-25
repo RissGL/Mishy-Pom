@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    public static GridManager Instance { get; private set; }
-
     [SerializeField]private int width;
     [SerializeField]private int height;
     [SerializeField]private int cellSize = 2;
@@ -17,14 +15,6 @@ public class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Debug.LogWarning("已经存在GridManager实例");
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
         gridSystem = new GridSystem<GridObject>(width, height, cellSize, originPosition);
     }
 
@@ -35,7 +25,7 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
-        //MishyManager.Instance.SetUp(gridSystem);
+        //board.mishyManager.SetUp(gridSystem);
     }
 
     /// <summary>

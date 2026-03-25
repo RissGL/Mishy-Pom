@@ -5,20 +5,27 @@ using UnityEngine;
 
 public class ScoreSystem : MonoBehaviour
 {
+    private PlayerBoard board;
+
     private int score=0;
     public const int MAX_COMBO_COUNT = 5;
 
-    public static event EventHandler<int> OnUpdateScore;
+    public event EventHandler<int> OnUpdateScore;
     private const int MAX_SCORE = 999;
 
     private const int CLEAR_BAD_MISHY_SCORE = 100;
 
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
+
     private void Start()
     {
-        MatchSystem.OnMatchCleared += MatchSystem_OnMatchCleared;
-        MatchSystem.OnSkillMatch += MatchSystem_OnSkillMatch;
-        MatchSystem.OnBadMishyClear += MatchSystem_OnBadMishyClear;
-        SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+        board.matchSystem.OnMatchCleared += MatchSystem_OnMatchCleared;
+        board.matchSystem.OnSkillMatch += MatchSystem_OnSkillMatch;
+        board.matchSystem.OnBadMishyClear += MatchSystem_OnBadMishyClear;
+        board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
     }
 
     private void MatchSystem_OnBadMishyClear(object sender, EventArgs e)
@@ -43,10 +50,10 @@ public class ScoreSystem : MonoBehaviour
 
     private void OnDestroy()
     {
-        MatchSystem.OnMatchCleared -= MatchSystem_OnMatchCleared;
-        MatchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch; 
-        MatchSystem.OnBadMishyClear -= MatchSystem_OnBadMishyClear;
-        SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
+        board.matchSystem.OnMatchCleared -= MatchSystem_OnMatchCleared;
+        board.matchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch;
+        board.matchSystem.OnBadMishyClear -= MatchSystem_OnBadMishyClear;
+        board.skillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
     private void MatchSystem_OnMatchCleared(object sender, MatchSystem.MatchInfo e)

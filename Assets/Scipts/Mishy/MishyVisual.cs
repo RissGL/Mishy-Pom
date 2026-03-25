@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MishyVisual : MonoBehaviour
 {
+    private PlayerBoard board;
     [SerializeField] private Animator animator;
 
     private bool isVanishing = false;
@@ -20,9 +21,14 @@ public class MishyVisual : MonoBehaviour
 
     public bool IsMoving => moveCoroutine != null;
 
+    public void SetUp(PlayerBoard board)
+    {
+        this.board = board;
+    }
+
     public void DownMoveAni(Transform rootTransform, GridPosition targetGridPosition) 
     {
-        Vector3 targetPosition=GridManager.Instance.GetWorldPosition(targetGridPosition);
+        Vector3 targetPosition=board.gridManager.GetWorldPosition(targetGridPosition);
 
         if (moveCoroutine != null)
         {
@@ -63,7 +69,7 @@ public class MishyVisual : MonoBehaviour
     /// </summary>
     public void PushUpMoveAni(Transform rootTransform, GridPosition targetGridPosition,float delay)
     {
-        Vector3 targetPosition = GridManager.Instance.GetWorldPosition(targetGridPosition);
+        Vector3 targetPosition = board.gridManager.GetWorldPosition(targetGridPosition);
 
         if (moveCoroutine != null)
         {
