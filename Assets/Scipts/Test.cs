@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
+    [SerializeField] private PlayerBoard board;
     [SerializeField] private MishyPreviewQueue m_Queue;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
-            MishyManager.Instance.MishyColumnUp(2);
+            board.mishyManager.MishyColumnUp(2);
         }
     }
 

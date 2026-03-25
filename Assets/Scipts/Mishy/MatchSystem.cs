@@ -6,12 +6,21 @@ using static UnityEditor.PlayerSettings;
 
 public class MatchSystem : MonoBehaviour
 {
+    private PlayerBoard board;
+
     private int currentCombo =0;
     public bool IsMatching { get; private set; }
 
-    public static event EventHandler<MatchInfo> OnMatchCleared;
-    public static event EventHandler<int> OnSkillMatch;
-    public static event EventHandler OnBadMishyClear;
+    public event EventHandler<MatchInfo> OnMatchCleared;
+    public event EventHandler<int> OnSkillMatch;
+    public event EventHandler OnBadMishyClear;
+
+    public event EventHandler<PlayerBoard> OnGameOver;
+
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
 
     public class MatchInfo :EventArgs
     {
@@ -32,16 +41,16 @@ public class MatchSystem : MonoBehaviour
     public List<List<Mishy>> FindAllMatches()
     {
         List<List<Mishy>> allMatches=new List<List<Mishy>>();
-        bool[,] visited = new bool[GridManager.Instance.GetWidth(),
-            GridManager.Instance.GetHeight()];
+        bool[,] visited = new bool[board.gridManager.GetWidth(),
+            board.gridManager.GetHeight()];
 
-        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        for (int x = 0; x < board.gridManager.GetWidth(); x++)
         {
-            for (int y = 0; y < GridManager.Instance.GetHeight(); y++) 
+            for (int y = 0; y < board.gridManager.GetHeight(); y++) 
             {
                 GridPosition gridPosition =new GridPosition(x,y);
 
-                if (!visited[x, y] && GridManager.Instance.HasMishy(gridPosition))
+                if (!visited[x, y] && board.gridManager.HasMishy(gridPosition))
                 {
                     List<Mishy> connectedMishyies = GetConnectedMishies(gridPosition, visited);
 
@@ -60,10 +69,20 @@ public class MatchSystem : MonoBehaviour
     private List<Mishy> GetConnectedMishies(GridPosition startPos, bool[,] visited)
     {
         List<Mishy> connected=new List<Mishy>();
-        MishyType mishyType= GridManager.Instance.GetGridMishy(startPos).GetMishyType();
+        MishyType mishyType= board.gridManager.GetGridMishy(startPos).GetMishyType();
 
         Stack<GridPosition> stack = new Stack<GridPosition>();
         stack.Push(startPos);
+
+        //判断是否结束游戏
+        for (int i = board.mishyManager.GetSpawnY(); i < board.gridManager.GetHeight(); i++)
+        {
+            GridPosition gridPosition=new GridPosition(board.mishyManager.GetSpawnX(), i);
+            if (board.gridManager.HasMishy(gridPosition))
+            {
+                OnGameOver?.Invoke(this, board);
+            }
+        }
 
 
         GridPosition[] dirs = {
@@ -79,18 +98,18 @@ public class MatchSystem : MonoBehaviour
             if (visited[current.x,current.y]) continue;
             visited[current.x,current.y] = true;
 
-            connected.Add(GridManager.Instance.GetGridMishy(current));
+            connected.Add(board.gridManager.GetGridMishy(current));
 
 
             foreach (GridPosition dir in dirs) 
             {
                 GridPosition gridPosition= dir+current;
 
-                if (GridManager.Instance.IsValidGridPosition(gridPosition))
+                if (board.gridManager.IsValidGridPosition(gridPosition))
                 {
-                    if (GridManager.Instance.HasMishy(gridPosition))
+                    if (board.gridManager.HasMishy(gridPosition))
                     {
-                        if (GridManager.Instance.GetGridMishy(gridPosition).GetMishyType() == mishyType)
+                        if (board.gridManager.GetGridMishy(gridPosition).GetMishyType() == mishyType)
                         {
                             stack.Push(gridPosition);
                         }
@@ -111,10 +130,10 @@ public class MatchSystem : MonoBehaviour
                     GridPosition testPosition = mishyPosition + dir;
 
                     // 1. 先判断是否越界
-                    if (GridManager.Instance.IsValidGridPosition(testPosition))
+                    if (board.gridManager.IsValidGridPosition(testPosition))
                     {
                         // 2. 再安全地获取咪西，看是不是坏咪西
-                        if (GridManager.Instance.TryGetGridMishy(testPosition, out Mishy mishy_test) &&
+                        if (board.gridManager.TryGetGridMishy(testPosition, out Mishy mishy_test) &&
                             mishy_test.GetMishyType() == MishyType.BadMishy)
                         {
                             // 3. 防止同一个坏咪西被多个相邻的普通咪西重复添加
@@ -151,8 +170,8 @@ public class MatchSystem : MonoBehaviour
                 // 没有任何消除，结算结束，重置 Combo
                 currentCombo = 0;
 
-                //MishyManager.Instance.SpawnNextPair();
-                MishyManager.Instance.OnTurnSettlementFinished();
+                //board.mishyManager.SpawnNextPair();
+                board.mishyManager.OnTurnSettlementFinished();
 
                 IsMatching = false;
                 yield break; // 结束协程
@@ -170,7 +189,7 @@ public class MatchSystem : MonoBehaviour
                         OnBadMishyClear?.Invoke(this, EventArgs.Empty);
                     }
 
-                    GridManager.Instance.ClearGridMishy(m.GetGridPosition());
+                    board.gridManager.ClearGridMishy(m.GetGridPosition());
 
                     // TODO: 咪西消灭动画
                     m.PlayVanishAni();
@@ -183,7 +202,7 @@ public class MatchSystem : MonoBehaviour
             yield return new WaitForSeconds(0.4f);
 
             // 变成协程等待它掉完
-            yield return StartCoroutine(MishyManager.Instance.ApplyGravityRoutine());
+            yield return StartCoroutine(board.mishyManager.ApplyGravityRoutine());
 
             // 连击数增加，进入下一次循环
             currentCombo++;
@@ -214,15 +233,15 @@ public class MatchSystem : MonoBehaviour
         int matchScore = 0;
         IsMatching=true;
 
-        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        for (int x = 0; x < board.gridManager.GetWidth(); x++)
         {
             for (int y = 0; y < count; y++) 
             {
                 GridPosition gridPosition=new GridPosition(x,y);
 
-                if (GridManager.Instance.TryGetGridMishy(gridPosition, out Mishy mishy))
+                if (board.gridManager.TryGetGridMishy(gridPosition, out Mishy mishy))
                 {
-                    GridManager.Instance.ClearGridMishy(mishy.GetGridPosition());
+                    board.gridManager.ClearGridMishy(mishy.GetGridPosition());
                     mishy.PlayVanishAni();
                     matchScore++;
                     Destroy(mishy.gameObject, 0.4f);
@@ -235,9 +254,9 @@ public class MatchSystem : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
 
-        yield return StartCoroutine(MishyManager.Instance.ApplyGravityRoutine());
-        //MishyManager.Instance.SpawnNextPair();
-        MishyManager.Instance.OnTurnSettlementFinished();
+        yield return StartCoroutine(board.mishyManager.ApplyGravityRoutine());
+        //board.mishyManager.SpawnNextPair();
+        board.mishyManager.OnTurnSettlementFinished();
         IsMatching = false;
     }
 }

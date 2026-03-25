@@ -5,16 +5,23 @@ using UnityEngine;
 
 public class NextPushUpColumnMishy : MonoBehaviour
 {
+    private PlayerBoard board;
+
     private int columnCount;
     private MishyType[] previewMishies;
 
 
-    public static event EventHandler<MishyType[][]> OnMultiMishyPushUp;
-    public static event EventHandler<MishyType[]> OnUpdateSingleRow;
+    public event EventHandler<MishyType[][]> OnMultiMishyPushUp;
+    public event EventHandler<MishyType[]> OnUpdateSingleRow;
+
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
 
     private void Start()
     {
-        columnCount = GridManager.Instance.GetWidth();
+        columnCount = board.gridManager.GetWidth();
         NextPushUpColumnMishyInit();
     }
 
@@ -30,7 +37,7 @@ public class NextPushUpColumnMishy : MonoBehaviour
         for (int x = 0; x < columnCount; x++)
         {
             int tryCount = 0;
-            MishyType mishyType = MishyManager.Instance.RandomMishyTypeWithBadMishy();
+            MishyType mishyType = board.mishyManager.RandomMishyTypeWithBadMishy();
             while (tryCount < 30)
             {
                 bool isConflict = false;
@@ -46,7 +53,7 @@ public class NextPushUpColumnMishy : MonoBehaviour
                         break;
                     }
 
-                    mishyType = MishyManager.Instance.RandomMishyTypeWithBadMishy();
+                    mishyType = board.mishyManager.RandomMishyTypeWithBadMishy();
                     tryCount++;
                 }
                 else 
@@ -79,7 +86,7 @@ public class NextPushUpColumnMishy : MonoBehaviour
         MishyType[] gridBottomRow = new MishyType[columnCount];
         for (int x = 0; x < columnCount; x++)
         {
-            if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, 0), out Mishy m))
+            if (board.gridManager.TryGetGridMishy(new GridPosition(x, 0), out Mishy m))
                 gridBottomRow[x] = m.GetMishyType();
             else
                 gridBottomRow[x] = (MishyType)999; // 给个不会冲突的假类型

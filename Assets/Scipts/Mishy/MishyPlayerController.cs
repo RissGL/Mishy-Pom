@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 public class MishyPlayerController : MonoBehaviour
 {
+    private PlayerBoard board;
+
     private Mishy mishy_One;
     private Mishy mishy_Two;
     private bool isActive;
@@ -27,6 +29,34 @@ public class MishyPlayerController : MonoBehaviour
 
     private float moveSpeed=30f;//左右移动的速度
 
+    [Header("技能按键配置")]
+    public InputActionReference leftMoveAction;
+    public InputActionReference rightMoveAction;
+    public InputActionReference swapAction;
+    public InputActionReference fastFallAction;
+
+
+    private void OnEnable()
+    {
+        leftMoveAction?.action.Enable();
+        rightMoveAction?.action.Enable();
+        swapAction?.action.Enable();
+        fastFallAction?.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        leftMoveAction?.action.Disable();
+        rightMoveAction?.action.Disable();
+        swapAction?.action.Disable();
+        fastFallAction?.action.Disable();
+    }
+
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
+
     public void SetActivePair(Mishy mishy_One, Mishy mishy_Two)
     {
         this.mishy_One = mishy_One;
@@ -38,11 +68,11 @@ public class MishyPlayerController : MonoBehaviour
         autoFastFallTimer = autoFastFallDelay;
 
         promptBar.SetActive(true);
-        promptBar.transform.position = GridManager.Instance.GetWorldPosition
-            (new GridPosition(MishyManager.Instance.GetSpawnX(),0));
+        promptBar.transform.position = board.gridManager.GetWorldPosition
+            (new GridPosition(board.mishyManager.GetSpawnX(),0));
 
-        ghostVector3Bottom = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
-        ghostVector3Top = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
+        ghostVector3Bottom = board.gridManager.GetWorldPosition(mishy_One.GetGridPosition());
+        ghostVector3Top = board.gridManager.GetWorldPosition(mishy_Two.GetGridPosition());
 
     }
 
@@ -51,26 +81,26 @@ public class MishyPlayerController : MonoBehaviour
         if (!isActive) 
             return;
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (leftMoveAction.action.WasPressedThisFrame())
         {
             TryMove(new GridPosition(-1,0));
 
             //TODO: 检测是否能动，不能未来要触发错误音效
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (rightMoveAction.action.WasPressedThisFrame())
         {
             TryMove(new GridPosition(1, 0));
 
             //TODO: 检测是否能动，不能未来要触发错误音效
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (swapAction.action.WasPressedThisFrame())
         {
             SwapMishies();
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (fastFallAction.action.WasPressedThisFrame())
         {
             autoFastFallTimer = 0;
         }
@@ -80,7 +110,7 @@ public class MishyPlayerController : MonoBehaviour
         {
             autoFastFallTimer-=Time.deltaTime;
         }
-        bool isHoldingS = Input.GetKey(KeyCode.S)&&autoFastFallTimer<=0;
+        bool isHoldingS = fastFallAction.action.IsPressed()&&autoFastFallTimer<=0;
         float targetFallInterval =isHoldingS ? fastFallInterval : fallInterval;
 
         //利用百分比同步下落进度
@@ -119,10 +149,10 @@ public class MishyPlayerController : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        Vector3 targetPosOne = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
-        Vector3 targetPosTwo = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
+        Vector3 targetPosOne = board.gridManager.GetWorldPosition(mishy_One.GetGridPosition());
+        Vector3 targetPosTwo = board.gridManager.GetWorldPosition(mishy_Two.GetGridPosition());
 
-        float fallSpeed = (float)GridManager.Instance.GetCellSize() / currentFallInterval;
+        float fallSpeed = (float)board.gridManager.GetCellSize() / currentFallInterval;
 
         ghostVector3Top.x = Mathf.Lerp(ghostVector3Top.x, targetPosTwo.x, Time.deltaTime * moveSpeed);
         ghostVector3Top.y= Mathf.MoveTowards(ghostVector3Top.y, targetPosTwo.y, Time.deltaTime * fallSpeed);
@@ -136,7 +166,7 @@ public class MishyPlayerController : MonoBehaviour
             float t = 1.0f - swapTimer / swapDuration;
 
             float arc = 0.7f;//转的弧度
-            float arcOffset = (float)GridManager.Instance.GetCellSize()*arc*Mathf.Sin(Mathf.PI * t);
+            float arcOffset = (float)board.gridManager.GetCellSize()*arc*Mathf.Sin(Mathf.PI * t);
             Vector3 posOne = Vector3.Lerp(ghostVector3Top, ghostVector3Bottom, t);
             posOne.x += arcOffset; 
             mishy_One.transform.localPosition = posOne;
@@ -178,7 +208,7 @@ public class MishyPlayerController : MonoBehaviour
             ExecuteMove(nextPosOne, nextPosTwo);
             // TODO: 播放平移音效 (Swoosh)
 
-            promptBar.transform.position =GridManager.Instance.GetWorldPosition( new GridPosition(nextPosOne.x, 0));
+            promptBar.transform.position =board.gridManager.GetWorldPosition( new GridPosition(nextPosOne.x, 0));
 
         }
         else
@@ -212,10 +242,10 @@ public class MishyPlayerController : MonoBehaviour
     /// <returns></returns>
     private bool CanOccupy(GridPosition pos) 
     {
-        if (!GridManager.Instance.IsValidGridPosition(pos))
+        if (!board.gridManager.IsValidGridPosition(pos))
             return false;
 
-        if (GridManager.Instance.HasMishy(pos))
+        if (board.gridManager.HasMishy(pos))
             return false;
 
         return true;
@@ -256,18 +286,18 @@ public class MishyPlayerController : MonoBehaviour
     {
         isActive = false;
 
-        mishy_One.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_One.GetGridPosition());
-        mishy_Two.transform.localPosition = GridManager.Instance.GetWorldPosition(mishy_Two.GetGridPosition());
+        mishy_One.transform.localPosition = board.gridManager.GetWorldPosition(mishy_One.GetGridPosition());
+        mishy_Two.transform.localPosition = board.gridManager.GetWorldPosition(mishy_Two.GetGridPosition());
 
         mishy_One.PlayLandAni();
         mishy_Two.PlayLandAni();
 
         promptBar.gameObject.SetActive(false);
 
-        GridManager.Instance.SetGridMishy(mishy_One.GetGridPosition(), mishy_One);
-        GridManager.Instance.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
+        board.gridManager.SetGridMishy(mishy_One.GetGridPosition(), mishy_One);
+        board.gridManager.SetGridMishy(mishy_Two.GetGridPosition(), mishy_Two);
 
-        FindObjectOfType<MatchSystem>().StartMatchSequence();
+        board.matchSystem.StartMatchSequence();
     }
 
 

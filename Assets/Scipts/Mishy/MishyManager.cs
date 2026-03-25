@@ -6,8 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class MishyManager : MonoBehaviour
 {
-    public static MishyManager Instance { get; private set; }
-
+    private PlayerBoard board;
     //private GridSystem<GridObject> gridSystem;
 
     [Header("存放咪西的父节点")]
@@ -55,24 +54,22 @@ public class MishyManager : MonoBehaviour
         return SpawnGridPositionDown.x;
     }
 
+    public int GetSpawnY() 
+    {
+        return SpawnGridPositionDown.y;
+    }
+
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Debug.LogWarning("已经存在GridManager实例");
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
+        board = GetComponentInParent<PlayerBoard>();
     }
 
     private void Start()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
-        NextPushUpColumnMishy.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
+        board.pushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
 
-        SkillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+        board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
         SpawnGridPositionUp = new GridPosition(SpawnGridPositionDown.x, SpawnGridPositionDown.y + 1);
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
@@ -83,7 +80,6 @@ public class MishyManager : MonoBehaviour
     {
         if (e.isUpToEnemy)
         {
-            mishyNextPushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
         }
         else
         {
@@ -95,8 +91,8 @@ public class MishyManager : MonoBehaviour
     private void OnDestroy()
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn -= MishyPreviewQueue_OnNextMishyNeedSpawn;
-        NextPushUpColumnMishy.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
-        SkillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
+        board.pushUpColumn.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
+        board.skillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
     }
 
     private IEnumerator AsyncSpawnFirstMishyPair()
@@ -152,14 +148,14 @@ public class MishyManager : MonoBehaviour
         PushAllMishyUp(rowCount);
         for (int y = 0; y < rowCount; y++)
         {
-            for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+            for (int x = 0; x < board.gridManager.GetWidth(); x++)
             {
                 GridPosition targetPos = new GridPosition(x, y);
 
                 Mishy mishy = SpawnAndSetMishy(new GridPosition(x, y), newRows[y][x]);
 
                 GridPosition startVisualPos = new GridPosition(x, y - rowCount);
-                mishy.transform.localPosition = GridManager.Instance.GetWorldPosition(startVisualPos);
+                mishy.transform.localPosition = board.gridManager.GetWorldPosition(startVisualPos);
 
                 float delay =GetRandomDelay(x,y);
 
@@ -177,17 +173,17 @@ public class MishyManager : MonoBehaviour
             return null;
 
         GameObject mishyTransform=Instantiate(mishyPrefab,mishyContainer);
-        mishyTransform.transform.localPosition = GridManager.Instance.GetWorldPosition(gridPosition);
+        mishyTransform.transform.localPosition = board.gridManager.GetWorldPosition(gridPosition);
 
         Mishy mishy = mishyTransform.GetComponent<Mishy>();
-        mishy.SetUp(gridPosition, mishyType);
+        mishy.SetUp(gridPosition, mishyType,board);
         mishy.OnMishyLanded += (landedMishy) => 
         {
             GridPosition finalPosition = landedMishy.GetGridPosition();
 
-            if (!GridManager.Instance.HasMishy(finalPosition))
+            if (!board.gridManager.HasMishy(finalPosition))
             {
-                GridManager.Instance.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
+                board.gridManager.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
                 // TODO: 消除检查逻辑
             }
         };
@@ -202,22 +198,22 @@ public class MishyManager : MonoBehaviour
             return null;
 
         GameObject mishyTransform = Instantiate(mishyPrefab, mishyContainer);
-        mishyTransform.transform.localPosition = GridManager.Instance.GetWorldPosition(gridPosition);
+        mishyTransform.transform.localPosition = board.gridManager.GetWorldPosition(gridPosition);
 
         Mishy mishy = mishyTransform.GetComponent<Mishy>();
-        mishy.SetUp(gridPosition, mishyType);
+        mishy.SetUp(gridPosition, mishyType,board);
         mishy.OnMishyLanded += (landedMishy) =>
         {
             GridPosition finalPosition = landedMishy.GetGridPosition();
 
-            if (!GridManager.Instance.HasMishy(finalPosition))
+            if (!board.gridManager.HasMishy(finalPosition))
             {
-                GridManager.Instance.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
+                board.gridManager.SetGridMishy(landedMishy.GetGridPosition(), landedMishy);
                 // TODO: 消除检查逻辑
             }
         };
 
-        GridManager.Instance.SetGridMishy(gridPosition, mishy);
+        board.gridManager.SetGridMishy(gridPosition, mishy);
         return mishy;
     }
 
@@ -229,11 +225,11 @@ public class MishyManager : MonoBehaviour
     {
         List<Mishy> mishies = new List<Mishy>();
 
-        for (int x = 0; x < GridManager.Instance.GetWidth(); x++) 
+        for (int x = 0; x < board.gridManager.GetWidth(); x++) 
         {
-            for (int y = 0; y < GridManager.Instance.GetHeight(); y++)
+            for (int y = 0; y < board.gridManager.GetHeight(); y++)
             {
-                if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
+                if (board.gridManager.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
                 {
                     mishies.Add(mishy);
                 }
@@ -250,11 +246,11 @@ public class MishyManager : MonoBehaviour
     /// <returns></returns>
     public bool CheckAllMishyMoveState() 
     {
-        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        for (int x = 0; x < board.gridManager.GetWidth(); x++)
         {
-            for (int y = 0; y < GridManager.Instance.GetHeight(); y++)
+            for (int y = 0; y < board.gridManager.GetHeight(); y++)
             {
-                if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
+                if (board.gridManager.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
                 {
                     if (mishy.IsMoving)
                     {
@@ -309,8 +305,8 @@ public class MishyManager : MonoBehaviour
     public IEnumerator ApplyGravityRoutine()
     {
         bool movedAny = false;
-        int width = GridManager.Instance.GetWidth();
-        int height = GridManager.Instance.GetHeight();
+        int width = board.gridManager.GetWidth();
+        int height = board.gridManager.GetHeight();
 
         // 逐列扫描
         for (int x = 0; x < width; x++)
@@ -323,7 +319,7 @@ public class MishyManager : MonoBehaviour
                 GridPosition currentPos = new GridPosition(x, y);
 
                 // 如果当前格子里有咪西
-                if (GridManager.Instance.TryGetGridMishy(currentPos, out Mishy currentMishy))
+                if (board.gridManager.TryGetGridMishy(currentPos, out Mishy currentMishy))
                 {
                     // 如果它下方有空位，就让它掉下去
                     if (y > emptySlotY)
@@ -331,8 +327,8 @@ public class MishyManager : MonoBehaviour
                         GridPosition targetPos = new GridPosition(x, emptySlotY);
 
                         // 1. 逻辑层：更新网格地图
-                        GridManager.Instance.ClearGridMishy(currentPos);
-                        GridManager.Instance.SetGridMishy(targetPos, currentMishy);
+                        board.gridManager.ClearGridMishy(currentPos);
+                        board.gridManager.SetGridMishy(targetPos, currentMishy);
 
                         // 2. 数据层：更新咪西自己的坐标记录
                         currentMishy.UpdateGridPosition(targetPos);
@@ -362,20 +358,20 @@ public class MishyManager : MonoBehaviour
     public void PushAllMishyUp(int rowCount = 1) 
     {
         // 必须从上往下遍历，不然会覆盖掉上面的方块！(你的倒序遍历是对的)
-        for (int x = 0; x < GridManager.Instance.GetWidth(); x++)
+        for (int x = 0; x < board.gridManager.GetWidth(); x++)
         {
-            for (int y = GridManager.Instance.GetHeight() - 1; y >= 0; y--)
+            for (int y = board.gridManager.GetHeight() - 1; y >= 0; y--)
             {
-                if (GridManager.Instance.TryGetGridMishy(new GridPosition(x, y), out Mishy m))
+                if (board.gridManager.TryGetGridMishy(new GridPosition(x, y), out Mishy m))
                 {
                     GridPosition currentPos = m.GetGridPosition();
                     GridPosition moveDir = new GridPosition(0, rowCount);
                     GridPosition targetPos = currentPos + moveDir;
 
-                    if (!GridManager.Instance.IsValidGridPosition(targetPos))
+                    if (!board.gridManager.IsValidGridPosition(targetPos))
                     {
                         // 被顶出最高点了
-                        GridManager.Instance.ClearGridMishy(currentPos);
+                        board.gridManager.ClearGridMishy(currentPos);
 
                         m.PlayVanishAni(); // 或者直接 Destroy(m.gameObject);
 
@@ -386,7 +382,7 @@ public class MishyManager : MonoBehaviour
                     }
 
 
-                    GridManager.Instance.MoveMishyWithGridPosition(currentPos, moveDir, m);
+                    board.gridManager.MoveMishyWithGridPosition(currentPos, moveDir, m);
 
                     m.UpdateGridPosition(targetPos);
 

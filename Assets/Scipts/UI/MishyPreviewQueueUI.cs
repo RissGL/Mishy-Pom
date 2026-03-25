@@ -5,7 +5,8 @@ using UnityEngine.UI; // 必须引入 UI
 
 public class MishyPreviewQueueUI : MonoBehaviour
 {
-    [SerializeField] private MishyPreviewQueue previewQueue;
+    [SerializeField] private PlayerBoard board;
+
     [SerializeField] private MishyDatabase database; // 引入数据库来获取外观
     [SerializeField] private RectTransform container; // 存放队列 UI 的父节点
 
@@ -19,38 +20,35 @@ public class MishyPreviewQueueUI : MonoBehaviour
     // 记录当前屏幕上活着的 UI 节点
     private List<GameObject> activeUINodes = new List<GameObject>();
 
-    private void Start()
+    private void Awake()
     {
-        previewQueue.OnNextMishyNeedSpawn += PreviewQueue_OnNextMishyNeedSpawn;
-        previewQueue.OnNextMishyEequeue += PreviewQueue_OnNextMishyDequeue;
-        previewQueue.OnPreviewQueueInit += PreviewQueue_OnPreviewQueueInit;
+        board.previewQueue.OnNextMishyNeedSpawn += PreviewQueue_OnNextMishyNeedSpawn;
+        board.previewQueue.OnNextMishyEequeue += PreviewQueue_OnNextMishyDequeue;
+        board.previewQueue.OnPreviewQueueInit += PreviewQueue_OnPreviewQueueInit;
     }
 
     private void OnDestroy()
     {
-        previewQueue.OnNextMishyNeedSpawn -= PreviewQueue_OnNextMishyNeedSpawn;
-        previewQueue.OnNextMishyEequeue -= PreviewQueue_OnNextMishyDequeue;
-        previewQueue.OnPreviewQueueInit -= PreviewQueue_OnPreviewQueueInit;
+        board.previewQueue.OnNextMishyNeedSpawn -= PreviewQueue_OnNextMishyNeedSpawn;
+        board.previewQueue.OnNextMishyEequeue -= PreviewQueue_OnNextMishyDequeue;
+        board.previewQueue.OnPreviewQueueInit -= PreviewQueue_OnPreviewQueueInit;
     }
 
     private void PreviewQueue_OnPreviewQueueInit(object sender, System.EventArgs e)
     {
-        // 1. 清理旧节点
         foreach (var node in activeUINodes)
         {
             if (node != null) Destroy(node);
         }
         activeUINodes.Clear();
 
-        // 2. 初始化排队生成
-        Queue<MishyType> initialQueue = previewQueue.GetAllNextMishy();
+        Queue<MishyType> initialQueue = board.previewQueue.GetAllNextMishy();
         int index = 0;
         foreach (var type in initialQueue)
         {
             GameObject uiNode = SpawnPureUINode(type);
             RectTransform rect = uiNode.GetComponent<RectTransform>();
 
-            // 初始时直接放到目标位置，不需要动画
             rect.anchoredPosition = new Vector2(0, -index * spacing);
             activeUINodes.Add(uiNode);
             index++;
@@ -59,29 +57,24 @@ public class MishyPreviewQueueUI : MonoBehaviour
 
     private void PreviewQueue_OnNextMishyDequeue(object sender, Queue<MishyType> newTwoMishies)
     {
-        // 1. 顶部 2 个旧节点飞天并消失
         if (activeUINodes.Count >= 2)
         {
             GameObject top1 = activeUINodes[0];
             GameObject top2 = activeUINodes[1];
 
-            // 从活跃列表中移除它们
             activeUINodes.RemoveAt(0);
             activeUINodes.RemoveAt(0);
 
-            // 播放离场动画（往上走两个格子并变透明）
             StartCoroutine(AnimateOutRoutine(top1));
             StartCoroutine(AnimateOutRoutine(top2));
         }
 
-        // 2. 存活的老节点依次往上顶 2 个位置
         for (int i = 0; i < activeUINodes.Count; i++)
         {
             Vector2 targetPos = new Vector2(0, -i * spacing);
             StartCoroutine(AnimateShiftRoutine(activeUINodes[i], targetPos));
         }
 
-        // 3. 底部生成 2 个新节点，从侧边滑入并变亮
         int startIndex = activeUINodes.Count;
         foreach (var type in newTwoMishies)
         {

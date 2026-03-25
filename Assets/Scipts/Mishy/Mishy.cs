@@ -64,4 +64,12 @@ public class Mishy : MonoBehaviour
     {
         mishyVisual.PushUpMoveAni(this.transform, targetGridPosition,delay);
     }
+
+    public void SetUp(GridPosition gridPosition, MishyType mishyType, PlayerBoard board)
+    {
+        this.gridPosition = gridPosition;
+        this.type = mishyType;
+
+        mishyVisual.SetUp(board);
+    }
 }

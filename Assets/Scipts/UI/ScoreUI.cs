@@ -7,6 +7,8 @@ public class ScoreUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI scoreText;
 
+    [SerializeField] private PlayerBoard board;
+
     private int screenScore = 0;
     private int trueScore;
 
@@ -19,12 +21,12 @@ public class ScoreUI : MonoBehaviour
 
     private void OnEnable()
     {
-        ScoreSystem.OnUpdateScore += ScoreSystem_OnUpdateScore;
+        board.scoreSystem.OnUpdateScore += ScoreSystem_OnUpdateScore;
     }
 
     private void OnDisable()
     {
-        ScoreSystem.OnUpdateScore -= ScoreSystem_OnUpdateScore;
+        board.scoreSystem.OnUpdateScore -= ScoreSystem_OnUpdateScore;
     }
 
     private void ScoreSystem_OnUpdateScore(object sender, int e)

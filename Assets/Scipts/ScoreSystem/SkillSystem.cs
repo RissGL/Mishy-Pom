@@ -2,13 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SkillSystem : MonoBehaviour
 {
+    private PlayerBoard board;
+
     private int columnUpCount = 0;
-    public static event EventHandler<SkillUseInfo> OnSkillUse;
+    public event EventHandler<SkillUseInfo> OnSkillUse;
     private SkillSystemVisual skillSystemVisual;
 
+    [Header("ººƒ‹∞¥º¸≈‰÷√")]
+    public InputActionReference skillSelfAction;
+    public InputActionReference skillEnemyAction;
+
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
 
     private void Start()
     {
@@ -17,12 +28,12 @@ public class SkillSystem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        if (skillSelfAction.action.WasPressedThisFrame())
         {
             UseSkill(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (skillEnemyAction.action.WasPressedThisFrame())
         {
             UseSkill(true);
         }
@@ -53,12 +64,18 @@ public class SkillSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        ScoreSystem.OnUpdateScore += ScoreSystem_OnUpdateScore;
+        board.scoreSystem.OnUpdateScore += ScoreSystem_OnUpdateScore;
+
+        skillEnemyAction?.action.Enable();
+        skillSelfAction?.action.Enable();
     }
 
     private void OnDisable()
     {
-        ScoreSystem.OnUpdateScore -= ScoreSystem_OnUpdateScore;
+        board.scoreSystem.OnUpdateScore -= ScoreSystem_OnUpdateScore;
+
+        skillEnemyAction?.action.Disable();
+        skillSelfAction?.action.Disable();
     }
     private void ScoreSystem_OnUpdateScore(object sender, int e)
     {

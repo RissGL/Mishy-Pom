@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MishyPreviewQueue : MonoBehaviour
 {
+    private PlayerBoard board;
     [SerializeField] private int reviewCount=10;
     private Queue<MishyType> nextMishies = new Queue<MishyType>();
 
@@ -12,6 +13,11 @@ public class MishyPreviewQueue : MonoBehaviour
 
     public event EventHandler<Queue<MishyType>> OnNextMishyEequeue;
     public event EventHandler OnPreviewQueueInit;
+
+    private void Awake()
+    {
+        board = GetComponentInParent<PlayerBoard>();
+    }
 
 
     public class MishyPairEventArgs : EventArgs
@@ -26,10 +32,10 @@ public class MishyPreviewQueue : MonoBehaviour
         public MishyType type_two;
     }
 
-    private void Start()
+   /* private void Start()
     {
         MishyPreviewQueueInit();
-    }
+    }*/
 
     public void MishyPreviewQueueInit() 
     {
@@ -37,20 +43,26 @@ public class MishyPreviewQueue : MonoBehaviour
 
         for (int i = 0; i < reviewCount; i++) 
         {
-            nextMishies.Enqueue(MishyManager.Instance.RandomMishyType());
+            nextMishies.Enqueue(board.mishyManager.RandomMishyType());
         }
         OnPreviewQueueInit?.Invoke(this,EventArgs.Empty);
     }
 
     public void DequeueNextMishy() 
     {
+        if (nextMishies == null||nextMishies.Count<=0)
+        {
+            MishyPreviewQueueInit();
+        }
+
+
         MishyPairEventArgs twoMishy = new MishyPairEventArgs(nextMishies.Dequeue(),nextMishies.Dequeue());
 
         Queue<MishyType> twoEnqueueMishy = new Queue<MishyType>();
 
         for (int i = 0; i < 2; i++) 
         {
-            MishyType mishyType = MishyManager.Instance.RandomMishyType();
+            MishyType mishyType = board.mishyManager.RandomMishyType();
             nextMishies.Enqueue(mishyType);
             twoEnqueueMishy.Enqueue(mishyType);
         }
