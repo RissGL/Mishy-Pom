@@ -44,6 +44,13 @@ public class SkillSystem : MonoBehaviour
         {
             return;
         }
+
+        if (board.skillBeamEffect != null)
+        {
+            Debug.Log("没有skill引用");
+            board.skillBeamEffect.PlayEffect();
+        }
+
         OnSkillUse?.Invoke(this, new SkillUseInfo(skillType, columnUpCount));
         columnUpCount = 0;
 

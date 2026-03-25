@@ -19,14 +19,15 @@ public class NextPushUpColumnMishy : MonoBehaviour
         board = GetComponentInParent<PlayerBoard>();
     }
 
-    private void Start()
+    /*private void Start()
     {
         columnCount = board.gridManager.GetWidth();
         NextPushUpColumnMishyInit();
-    }
+    }*/
 
     public void NextPushUpColumnMishyInit()
     {
+        columnCount = board.gridManager.GetWidth();
         previewMishies = GenerateSingleRow(null);
     }
 
