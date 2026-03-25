@@ -37,7 +37,7 @@ public class ScoreSystem : MonoBehaviour
         board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
     }
 
-    private void MatchSystem_OnBadMishyClear(object sender, EventArgs e)
+    private void MatchSystem_OnBadMishyClear(object sender, Vector3 e)
     {
         score += CLEAR_BAD_MISHY_SCORE;
         score = Mathf.Min(score, MAX_SCORE);

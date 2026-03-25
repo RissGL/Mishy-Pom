@@ -293,7 +293,7 @@ public class MishyManager : MonoBehaviour
     /// <returns></returns>
     public MishyType RandomMishyTypeWithBadMishy()
     {
-        return (MishyType)(int)(UnityEngine.Random.Range(10, 51)/10);//不会在这生成恶咪西
+        return (MishyType)(int)(UnityEngine.Random.Range(100, 514)/100);//在这生成恶咪西
     }
 
     /// <summary>
