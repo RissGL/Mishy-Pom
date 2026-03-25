@@ -957,6 +957,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1093927596}
     m_Modifications:
+    - target: {fileID: 429585006359176091, guid: 802f1c58a21ffeb479ddb4f8dae8854b, type: 3}
+      propertyPath: floatingScoreVfx
+      value: 
+      objectReference: {fileID: 4477013349415792755, guid: 3ac770292262a1747b585f2a77caa525, type: 3}
     - target: {fileID: 2412043791093667800, guid: 802f1c58a21ffeb479ddb4f8dae8854b, type: 3}
       propertyPath: skillPointVisual
       value: 
@@ -4833,6 +4837,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1093927596}
     m_Modifications:
+    - target: {fileID: 200558742139884786, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: floatingScoreVfx
+      value: 
+      objectReference: {fileID: 4477013349415792755, guid: 3ac770292262a1747b585f2a77caa525, type: 3}
     - target: {fileID: 2758449656119992497, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
       propertyPath: skillPointVisual
       value: 

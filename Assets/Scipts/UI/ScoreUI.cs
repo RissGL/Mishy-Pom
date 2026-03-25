@@ -46,6 +46,7 @@ public class ScoreUI : MonoBehaviour
         int startScore = screenScore;
         float duration = 0.3f+(trueScore-screenScore)/80f; // 总时长
         float elapsed = 0f;    // 已消耗时间
+        int lastUpdatedScore = -1;
 
         while (elapsed < duration) 
         {
@@ -54,8 +55,11 @@ public class ScoreUI : MonoBehaviour
             float t=elapsed/duration;
 
             screenScore = Mathf.RoundToInt(Mathf.Lerp(startScore,trueScore, t));
-            scoreText.text = screenScore.ToString();
 
+            if (screenScore != lastUpdatedScore)
+            {
+                scoreText.text = screenScore.ToString();
+            }
             yield return null;
         }
 

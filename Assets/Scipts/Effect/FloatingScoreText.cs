@@ -12,9 +12,17 @@ public class FloatingScoreText : MonoBehaviour
 
     public void SetUp(int comboNum,int score) 
     {
-        scoreText.text = comboNum.ToString()+"Combo\n" +"+"+score.ToString();
+        scoreText.text = comboNum.ToString()+"Combo\n" +"+"+score.ToString()+"Score";
 
         color=scoreText.color;
+        transform.position -= Vector3.forward;
+    }
+
+    public void BadMishyScoreSetUp()
+    {
+        scoreText.text ="+100Score";
+
+        color = scoreText.color;
         transform.position -= Vector3.forward;
     }
 

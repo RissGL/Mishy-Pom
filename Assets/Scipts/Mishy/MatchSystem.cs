@@ -13,13 +13,25 @@ public class MatchSystem : MonoBehaviour
 
     public event EventHandler<MatchInfo> OnMatchCleared;
     public event EventHandler<int> OnSkillMatch;
-    public event EventHandler OnBadMishyClear;
+    public event EventHandler<Vector3> OnBadMishyClear;
 
     public event EventHandler<PlayerBoard> OnGameOver;
+
+    private bool[,] visitedCache;
+    List<Mishy> connected = new List<Mishy>();
+    Stack<GridPosition> stack = new Stack<GridPosition>();
+
 
     private void Awake()
     {
         board = GetComponentInParent<PlayerBoard>();
+
+    }
+
+    private void Start()
+    {
+        visitedCache = new bool[board.gridManager.GetWidth(),
+board.gridManager.GetHeight()];
     }
 
     public class MatchInfo :EventArgs
@@ -41,8 +53,9 @@ public class MatchSystem : MonoBehaviour
     public List<List<Mishy>> FindAllMatches()
     {
         List<List<Mishy>> allMatches=new List<List<Mishy>>();
-        bool[,] visited = new bool[board.gridManager.GetWidth(),
-            board.gridManager.GetHeight()];
+
+        //重置数组
+        Array.Clear(visitedCache, 0, visitedCache.Length);
 
         for (int x = 0; x < board.gridManager.GetWidth(); x++)
         {
@@ -50,9 +63,9 @@ public class MatchSystem : MonoBehaviour
             {
                 GridPosition gridPosition =new GridPosition(x,y);
 
-                if (!visited[x, y] && board.gridManager.HasMishy(gridPosition))
+                if (!visitedCache[x, y] && board.gridManager.HasMishy(gridPosition))
                 {
-                    List<Mishy> connectedMishyies = GetConnectedMishies(gridPosition, visited);
+                    List<Mishy> connectedMishyies = GetConnectedMishies(gridPosition, visitedCache);
 
                     if (connectedMishyies.Count >= 3)
                     {
@@ -68,10 +81,11 @@ public class MatchSystem : MonoBehaviour
     // DFS 寻找相同颜色的连通块
     private List<Mishy> GetConnectedMishies(GridPosition startPos, bool[,] visited)
     {
-        List<Mishy> connected=new List<Mishy>();
-        MishyType mishyType= board.gridManager.GetGridMishy(startPos).GetMishyType();
+        //清空缓存
+        connected.Clear();
+        stack.Clear();
 
-        Stack<GridPosition> stack = new Stack<GridPosition>();
+        MishyType mishyType = board.gridManager.GetGridMishy(startPos).GetMishyType();
         stack.Push(startPos);
 
         //判断是否结束游戏
@@ -186,7 +200,7 @@ public class MatchSystem : MonoBehaviour
                 {
                     if (m.GetMishyType() == MishyType.BadMishy)
                     {
-                        OnBadMishyClear?.Invoke(this, EventArgs.Empty);
+                        OnBadMishyClear?.Invoke(this,board.gridManager.GetWorldPosition(m.GetGridPosition()));
                     }
 
                     board.gridManager.ClearGridMishy(m.GetGridPosition());

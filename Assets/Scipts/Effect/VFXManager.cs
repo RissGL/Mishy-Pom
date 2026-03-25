@@ -10,6 +10,20 @@ public class VEFManager : MonoBehaviour
     private void Awake()
     {
         board.scoreSystem.OnAddScore += ScoreSystem_OnAddScore;
+        board.matchSystem.OnBadMishyClear += MatchSystem_OnBadMishyClear;
+    }
+
+    private void MatchSystem_OnBadMishyClear(object sender, Vector3 e)
+    {
+
+    }
+
+    private void OnDestroy()
+    {
+        if (board != null && board.scoreSystem != null)
+        {
+            board.scoreSystem.OnAddScore -= ScoreSystem_OnAddScore;
+        }
     }
 
     private void ScoreSystem_OnAddScore(object sender, ScoreSystem.ScoreAddedEventArgs e)
