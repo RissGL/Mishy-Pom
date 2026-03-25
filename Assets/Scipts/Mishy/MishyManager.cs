@@ -71,6 +71,7 @@ public class MishyManager : MonoBehaviour
 
         board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
         SpawnGridPositionUp = new GridPosition(SpawnGridPositionDown.x, SpawnGridPositionDown.y + 1);
+        board.pushUpColumn.NextPushUpColumnMishyInit();
         StartCoroutine(AsyncSpawnFirstMishyPair());
         //TODO:改成等待玩家确定后再生成第一个
         MishyColumnUp(4);

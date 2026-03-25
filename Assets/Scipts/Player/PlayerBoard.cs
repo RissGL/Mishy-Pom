@@ -13,6 +13,10 @@ public class PlayerBoard : MonoBehaviour
     public ScoreSystem scoreSystem;
     public SkillSystem skillSystem;
 
+
+    [Header("特效引用")]
+    public SkillBeamEffect skillBeamEffect;
+
     private void Awake()
     {
         // 自动去子物体身上找这些组件，省得你手动拖拽漏了
