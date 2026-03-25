@@ -386,6 +386,7 @@ Transform:
   - {fileID: 3390728888139924499}
   - {fileID: 6064270805880877733}
   - {fileID: 465157245342257584}
+  - {fileID: 8759681568707218391}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5407064489596844860
@@ -406,6 +407,9 @@ MonoBehaviour:
   playerController: {fileID: 0}
   pushUpColumn: {fileID: 0}
   previewQueue: {fileID: 0}
+  scoreSystem: {fileID: 0}
+  skillSystem: {fileID: 0}
+  skillBeamEffect: {fileID: 0}
 --- !u!1 &8440858518804118130
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,3 +454,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35beb8c30717d0f4ba17b2640e28be45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8499950651159768974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8759681568707218391}
+  - component: {fileID: 200558742139884786}
+  m_Layer: 0
+  m_Name: VFXManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8759681568707218391
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8499950651159768974}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3346643828986401015}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &200558742139884786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8499950651159768974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3bf9526827ab4041a439b5dff461043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  board: {fileID: 5407064489596844860}
+  floatingScoreVfx: {fileID: 4477013349415792755, guid: 3ac770292262a1747b585f2a77caa525, type: 3}

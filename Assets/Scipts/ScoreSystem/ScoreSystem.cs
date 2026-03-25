@@ -15,6 +15,15 @@ public class ScoreSystem : MonoBehaviour
 
     private const int CLEAR_BAD_MISHY_SCORE = 100;
 
+    public event EventHandler<ScoreAddedEventArgs> OnAddScore;
+
+    public class ScoreAddedEventArgs : EventArgs
+    {
+        public int comboAddedScore;
+        public int comboCount;
+        public Vector3 centerPos;
+    }
+
     private void Awake()
     {
         board = GetComponentInParent<PlayerBoard>();
@@ -67,13 +76,22 @@ public class ScoreSystem : MonoBehaviour
 
             for (int i = 2; i <= comboCount; i++) 
             {
-                score += i * 5;
+                comboScore += i * 5;
             }
 
             score += comboScore;
+
+            OnAddScore?.Invoke(this, new ScoreAddedEventArgs
+            {
+                comboCount = e.matchCombo,
+                comboAddedScore = comboScore,
+                centerPos = e.matchCenter
+            });
         }
 
         score = Mathf.Min(score, MAX_SCORE);
         OnUpdateScore?.Invoke(this, score);
+
+
     }
 }
