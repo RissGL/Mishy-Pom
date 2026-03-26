@@ -35,7 +35,8 @@ public class GameOverUI : MonoBehaviour
     public void Show(string winnerName,float time) 
     {
         titleText.text =winnerName+"  Win!";
-        gamePlayerTime.text = "Play Time:" + (Mathf.RoundToInt(time).ToString()) + "s";
+        gamePlayerTime.text = "Play Time: " +$"<size=130%><gradient=Green>" +
+            $"{(Mathf.RoundToInt(time).ToString())}"  + " </size></gradient>s";
 
         gameObject.SetActive(true);
     }

@@ -98,6 +98,8 @@ public class MishyPlayerController : MonoBehaviour
         if (swapAction.action.WasPressedThisFrame())
         {
             SwapMishies();
+
+            board.boardAudioSystem.PlaySwapSound();
         }
 
         if (fastFallAction.action.WasPressedThisFrame())
@@ -208,12 +210,14 @@ public class MishyPlayerController : MonoBehaviour
             ExecuteMove(nextPosOne, nextPosTwo);
             // TODO: 播放平移音效 (Swoosh)
 
+            board.boardAudioSystem.PlayMoveSound();
             promptBar.transform.position =board.gridManager.GetWorldPosition( new GridPosition(nextPosOne.x, 0));
 
         }
         else
         {
             // TODO: 播放撞墙报错音效 (Error Buzzer)
+            board.boardAudioSystem.PlayErrorSound();
         }
     }
 
@@ -232,6 +236,8 @@ public class MishyPlayerController : MonoBehaviour
         {
             // 被挡住或者碰到底 -> 锁定并结算
             LockAndSettle();
+
+            board.boardAudioSystem.PlayDropSound();
         }
     }
 

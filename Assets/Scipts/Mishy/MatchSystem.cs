@@ -69,7 +69,7 @@ board.gridManager.GetHeight()];
 
                     if (connectedMishyies.Count >= 3)
                     {
-                        allMatches.Add(connectedMishyies);
+                        allMatches.Add(new List<Mishy>(connectedMishyies));
                     }
                 }
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,15 +42,15 @@ public class SkillBeamEffect : MonoBehaviour
     /// <summary>
     /// 触发技能特效
     /// </summary>
-    public void PlayEffect()
+    public void PlayEffect(Action skillAction)
     {
         Debug.Log("<color=yellow>特效触发指令已收到！</color>");
         gameObject.SetActive(true);
         StopAllCoroutines(); // 打断之前的动画
-        StartCoroutine(BeamAnimationRoutine());
+        StartCoroutine(BeamAnimationRoutine(skillAction));
     }
 
-    private IEnumerator BeamAnimationRoutine()
+    private IEnumerator BeamAnimationRoutine(Action skillAction)
     {
         float elapsed = 0f;
 
@@ -81,6 +82,8 @@ public class SkillBeamEffect : MonoBehaviour
 
         // 使用 Realtime 等待。等待期间由于 Update 还在跑，所以里面花纹会一直流！
         yield return new WaitForSecondsRealtime(stayDuration);
+
+        skillAction();
 
         // ================= 阶段三：迅速变细消失 =================
         elapsed = 0f;
