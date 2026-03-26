@@ -5,17 +5,29 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerManager : MonoBehaviour
 {
+    public static PlayerManager Instance { get; private set; }
+
+    public enum GameState 
+    {
+        Playing,
+        Pause,
+        GameOver
+    }
+
+    public GameState state;
+
     [SerializeField] private PlayerBoard player_one;
     [SerializeField] private PlayerBoard player_two;
 
     [SerializeField] private GameOverUI gameOverUI;
-
 
     private float gameTime=0;
     private bool isGameOver = false;
 
     private void Update()
     {
+
+
         gameTime += Time.deltaTime;
     }
     private void Awake()

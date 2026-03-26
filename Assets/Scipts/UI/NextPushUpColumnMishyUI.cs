@@ -14,6 +14,7 @@ public class NextPushUpColumnMishyUI : MonoBehaviour
     [SerializeField] private float spriteSize=108f;
 
     [SerializeField] private float animDuration = 0.3f;  // 动画时长
+    [SerializeField] private GameObject uiMishyPrefab;
 
     private void Awake()
     {
@@ -42,25 +43,16 @@ public class NextPushUpColumnMishyUI : MonoBehaviour
 
     private GameObject SpawnPureUINode(MishyType type)
     {
-        GameObject uiNode = new GameObject("UIPreview_" + type.ToString());
-        uiNode.transform.SetParent(container, false); // 设为容器的子物体
+        GameObject uiNode = Instantiate(uiMishyPrefab, container);
+        uiNode.name = "UIPreview_" + type.ToString();
 
-        RectTransform rect = uiNode.AddComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(spriteSize, spriteSize); 
+        Image img = uiNode.GetComponent<Image>();
+        Sprite sprite = database.GetSprite(type);
 
-        Image img = uiNode.AddComponent<Image>();
-
-        uiNode.AddComponent<CanvasGroup>();
-
-        GameObject prefab = database.GetPrefab(type);
-        if (prefab != null)
+        if (sprite != null)
         {
-            SpriteRenderer sr = prefab.GetComponentInChildren<SpriteRenderer>();
-            if (sr != null)
-            {
-                img.sprite = sr.sprite;
-                img.color = sr.color;
-            }
+            img.sprite = sprite;
+            img.color = database.GetColor(type);
         }
 
         return uiNode;

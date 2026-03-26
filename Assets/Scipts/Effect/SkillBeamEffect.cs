@@ -62,7 +62,6 @@ public class SkillBeamEffect : MonoBehaviour
 
         if (Bg != null) Bg.gameObject.SetActive(true);
 
-        // ================= 阶段一：划入屏幕 + 变粗 =================
         while (elapsed < animDuration)
         {
             elapsed += Time.unscaledDeltaTime;
@@ -76,7 +75,6 @@ public class SkillBeamEffect : MonoBehaviour
             yield return null;
         }
 
-        // ================= 阶段二：边框死死定在中间不动 =================
         rectTransform.anchoredPosition = centerPos;
         rectTransform.localScale = Vector3.one;
 
@@ -85,7 +83,6 @@ public class SkillBeamEffect : MonoBehaviour
 
         skillAction();
 
-        // ================= 阶段三：迅速变细消失 =================
         elapsed = 0f;
         while (elapsed < 0.15f)
         {

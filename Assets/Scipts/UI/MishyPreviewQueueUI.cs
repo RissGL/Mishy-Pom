@@ -20,6 +20,8 @@ public class MishyPreviewQueueUI : MonoBehaviour
     // 记录当前屏幕上活着的 UI 节点
     private List<GameObject> activeUINodes = new List<GameObject>();
 
+    [SerializeField] private GameObject uiMishyPrefab;
+
     private void Awake()
     {
         board.previewQueue.OnNextMishyNeedSpawn += PreviewQueue_OnNextMishyNeedSpawn;
@@ -95,29 +97,16 @@ public class MishyPreviewQueueUI : MonoBehaviour
 
     private GameObject SpawnPureUINode(MishyType type)
     {
-        // 1. 创建一个干净的空物体
-        GameObject uiNode = new GameObject("UIPreview_" + type.ToString());
-        uiNode.transform.SetParent(container, false); // 设为容器的子物体
+        GameObject uiNode = Instantiate(uiMishyPrefab, container);
+        uiNode.name = "UIPreview_" + type.ToString();
 
-        // 2. 赋予 UI 属性
-        RectTransform rect = uiNode.AddComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(spriteSize, spriteSize); // 这里根据你的 UI 画布大小自己调
+        Image img = uiNode.GetComponent<Image>();
 
-        Image img = uiNode.AddComponent<Image>();
-
-        // 3. 添加 CanvasGroup 用于控制透明度（Alpha 0~1）
-        uiNode.AddComponent<CanvasGroup>();
-
-        // 4. 从你的物理预制体上“偷”贴图！
-        GameObject prefab = database.GetPrefab(type);
-        if (prefab != null)
+        Sprite sprite = database.GetSprite(type);
+        if (sprite != null)
         {
-            SpriteRenderer sr = prefab.GetComponentInChildren<SpriteRenderer>();
-            if (sr != null)
-            {
-                img.sprite = sr.sprite;
-                img.color = sr.color;
-            }
+            img.sprite = sprite;
+            img.color = database.GetColor(type);
         }
 
         return uiNode;
