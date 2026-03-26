@@ -98,6 +98,7 @@ board.gridManager.GetHeight()];
                 if (!isGameOverTriggered)
                 {
                     OnGameOver?.Invoke(this, board);
+                    isGameOverTriggered = true;
                 }
             }
         }

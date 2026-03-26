@@ -23,17 +23,21 @@ public class PauseUI : MonoBehaviour
         reStartButton.onClick.AddListener(() => 
         {
             StartCoroutine(LoadSceneAsync(SceneName.BATTLE_GAME_SCENE));
+            Time.timeScale = 1f;//恢复时间
         });
 
         endButton.onClick.AddListener(() =>
         {
             StartCoroutine(LoadSceneAsync(SceneName.START_SCENE));
+            Time.timeScale = 1f;//恢复时间
         });
         Hide();
     }
 
-    public void Show() 
+    public void Show(float playTime) 
     {
+        gamePlayerTime.text = "Play Time: " + $"<size=130%><gradient=Green>" +
+    $"{(Mathf.RoundToInt(playTime).ToString())}" + " </size></gradient>s";
         gameObject.SetActive(true);
     }
 

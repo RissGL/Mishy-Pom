@@ -1,54 +1,113 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static PlayerManager Instance { get; private set; }
-
+    public static GameState CurrentState { get; private set; }
     public enum GameState 
     {
+        CountDown,
         Playing,
         Pause,
         GameOver
     }
 
-    public GameState state;
+
+    [SerializeField] private InputActionReference pauseAction;
 
     [SerializeField] private PlayerBoard player_one;
     [SerializeField] private PlayerBoard player_two;
 
     [SerializeField] private GameOverUI gameOverUI;
+    [SerializeField] private PauseUI pauseUI;
 
     private float gameTime=0;
     private bool isGameOver = false;
 
+    [Header("µ¹¼ÆÊ±")]
+    [SerializeField] private CountdownUI countdownUI;
+
     private void Update()
     {
+        if (CurrentState == GameState.GameOver)
+            return;
 
+        if (pauseAction.action.WasPressedThisFrame())
+        {
+            TogglePause();
+        }
 
         gameTime += Time.deltaTime;
     }
+
+    public void TogglePause() 
+    {
+        if (CurrentState == GameState.Playing)
+        {
+            CurrentState = GameState.Pause;
+            pauseUI.Show(gameTime);
+            Time.timeScale = 0f;
+        }
+        else if (CurrentState == GameState.Pause)
+        {
+            CurrentState = GameState.Playing;
+            pauseUI.Hide();
+            Time.timeScale = 1f;
+        }
+    }
+
+    private void OnEnable()
+    {
+        pauseAction?.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        pauseAction?.action.Disable();
+    }
+
     private void Awake()
     {
+        CurrentState = GameState.CountDown;
+
         player_one.matchSystem.OnGameOver += Player1_MatchSystem_OnGameOver;
         player_two.matchSystem.OnGameOver += Player2_MatchSystem_OnGameOver;
 
         player_one.skillSystem.OnSkillExecute += Player1_SkillSystem_OnSkillUse;
         player_two.skillSystem.OnSkillExecute += Player2_SkillSystem_OnSkillUse;
+
+        countdownUI.OnCountdownOver += CountdownUI_OnCountdownOver;
+    }
+
+    private void Start()
+    {
+        countdownUI.StartCountdown();
+    }
+
+    private void CountdownUI_OnCountdownOver(object sender, System.EventArgs e)
+    {
+        CurrentState=GameState.Playing;
     }
 
     private void Player2_SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)
     {
         if (isGameOver) return;
-        player_one.pushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
+        if (e.isUpToEnemy)
+        {
+            player_one.pushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
+        }
     }
 
     private void Player1_SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)
     {
         if (isGameOver) return;
-        player_two.pushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
+        if (e.isUpToEnemy)
+        {
+            player_two.pushUpColumn.PushMultiColumnMishyUp(e.matchColumnCount);
+        }
     }
 
 
