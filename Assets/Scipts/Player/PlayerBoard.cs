@@ -12,7 +12,7 @@ public class PlayerBoard : MonoBehaviour
     public MishyPreviewQueue previewQueue;
     public ScoreSystem scoreSystem;
     public SkillSystem skillSystem;
-
+    public BoardAudioSystem boardAudioSystem;
 
     [Header("特效引用")]
     public SkillBeamEffect skillBeamEffect;
@@ -28,5 +28,7 @@ public class PlayerBoard : MonoBehaviour
         previewQueue = GetComponentInChildren<MishyPreviewQueue>();
         scoreSystem = GetComponentInChildren<ScoreSystem>();
         skillSystem = GetComponentInChildren<SkillSystem>();
+
+        boardAudioSystem = GetComponent<BoardAudioSystem>();
     }
 }

@@ -23,8 +23,8 @@ public class PlayerManager : MonoBehaviour
         player_one.matchSystem.OnGameOver += Player1_MatchSystem_OnGameOver;
         player_two.matchSystem.OnGameOver += Player2_MatchSystem_OnGameOver;
 
-        player_one.skillSystem.OnSkillUse += Player1_SkillSystem_OnSkillUse;
-        player_two.skillSystem.OnSkillUse += Player2_SkillSystem_OnSkillUse;
+        player_one.skillSystem.OnSkillExecute += Player1_SkillSystem_OnSkillUse;
+        player_two.skillSystem.OnSkillExecute += Player2_SkillSystem_OnSkillUse;
     }
 
     private void Player2_SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)

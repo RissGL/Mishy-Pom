@@ -16,7 +16,7 @@ public class ScoreUI : MonoBehaviour
 
     private void Start()
     {
-        scoreText.text = screenScore.ToString();
+        scoreText.text = FormatScoreText(screenScore);
     }
 
     private void OnEnable()
@@ -40,6 +40,17 @@ public class ScoreUI : MonoBehaviour
 
         rollingCoroutine=StartCoroutine(ScoreRolling());
     }
+    private string FormatScoreText(int currentScore)
+    {
+        string s = currentScore.ToString();
+
+        if (s.Length >= 3)
+        {
+            return $"<size=135>{s[0]}</size>{s.Substring(1)}";
+        }
+        return s;
+    }
+
 
     private IEnumerator ScoreRolling()
     {
@@ -58,13 +69,13 @@ public class ScoreUI : MonoBehaviour
 
             if (screenScore != lastUpdatedScore)
             {
-                scoreText.text = screenScore.ToString();
+                scoreText.text = FormatScoreText(screenScore);
             }
             yield return null;
         }
 
         screenScore=trueScore;
-        scoreText.text = screenScore.ToString();
+        scoreText.text = FormatScoreText(screenScore);
         rollingCoroutine =null;
     }
 }

@@ -9,12 +9,15 @@ public class SkillSystem : MonoBehaviour
     private PlayerBoard board;
 
     private int columnUpCount = 0;
-    public event EventHandler<SkillUseInfo> OnSkillUse;
+    public event EventHandler<SkillUseInfo> OnSkillExecute;
+    public event EventHandler<SkillUseInfo> OnSkillCast;
+
     private SkillSystemVisual skillSystemVisual;
 
     [Header("技能按键配置")]
     public InputActionReference skillSelfAction;
     public InputActionReference skillEnemyAction;
+
 
     private void Awake()
     {
@@ -44,14 +47,22 @@ public class SkillSystem : MonoBehaviour
         {
             return;
         }
+        int currentCount = columnUpCount;
 
         if (board.skillBeamEffect != null)
         {
-            Debug.Log("没有skill引用");
-            board.skillBeamEffect.PlayEffect();
+            OnSkillCast?.Invoke(this, new SkillUseInfo(skillType, currentCount));
+
+            board.skillBeamEffect.PlayEffect(() => 
+            {
+                OnSkillExecute?.Invoke(this, new SkillUseInfo(skillType, currentCount));
+            });
+        }
+        else
+        {
+            OnSkillExecute?.Invoke(this, new SkillUseInfo(skillType, currentCount));
         }
 
-        OnSkillUse?.Invoke(this, new SkillUseInfo(skillType, columnUpCount));
         columnUpCount = 0;
 
         skillSystemVisual.SetSkillPointVisual(false);

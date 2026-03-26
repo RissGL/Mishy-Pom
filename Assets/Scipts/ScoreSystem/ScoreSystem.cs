@@ -34,7 +34,7 @@ public class ScoreSystem : MonoBehaviour
         board.matchSystem.OnMatchCleared += MatchSystem_OnMatchCleared;
         board.matchSystem.OnSkillMatch += MatchSystem_OnSkillMatch;
         board.matchSystem.OnBadMishyClear += MatchSystem_OnBadMishyClear;
-        board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+        board.skillSystem.OnSkillExecute += SkillSystem_OnSkillUse;
     }
 
     private void MatchSystem_OnBadMishyClear(object sender, Vector3 e)
@@ -62,7 +62,7 @@ public class ScoreSystem : MonoBehaviour
         board.matchSystem.OnMatchCleared -= MatchSystem_OnMatchCleared;
         board.matchSystem.OnSkillMatch -= MatchSystem_OnSkillMatch;
         board.matchSystem.OnBadMishyClear -= MatchSystem_OnBadMishyClear;
-        board.skillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
+        board.skillSystem.OnSkillExecute -= SkillSystem_OnSkillUse;
     }
 
     private void MatchSystem_OnMatchCleared(object sender, MatchSystem.MatchInfo e)

@@ -69,7 +69,7 @@ public class MishyManager : MonoBehaviour
         mishyPreviewQueue.OnNextMishyNeedSpawn += MishyPreviewQueue_OnNextMishyNeedSpawn;
         board.pushUpColumn.OnMultiMishyPushUp += NextPushUpColumnMishy_OnMishyPushUp;
 
-        board.skillSystem.OnSkillUse += SkillSystem_OnSkillUse;
+        board.skillSystem.OnSkillExecute += SkillSystem_OnSkillUse;
         SpawnGridPositionUp = new GridPosition(SpawnGridPositionDown.x, SpawnGridPositionDown.y + 1);
         board.pushUpColumn.NextPushUpColumnMishyInit();
         StartCoroutine(AsyncSpawnFirstMishyPair());
@@ -93,7 +93,7 @@ public class MishyManager : MonoBehaviour
     {
         mishyPreviewQueue.OnNextMishyNeedSpawn -= MishyPreviewQueue_OnNextMishyNeedSpawn;
         board.pushUpColumn.OnMultiMishyPushUp -= NextPushUpColumnMishy_OnMishyPushUp;
-        board.skillSystem.OnSkillUse -= SkillSystem_OnSkillUse;
+        board.skillSystem.OnSkillExecute -= SkillSystem_OnSkillUse;
     }
 
     private IEnumerator AsyncSpawnFirstMishyPair()
