@@ -21,6 +21,7 @@ public class MatchSystem : MonoBehaviour
     List<Mishy> connected = new List<Mishy>();
     Stack<GridPosition> stack = new Stack<GridPosition>();
 
+    private bool isGameOverTriggered = false;
 
     private void Awake()
     {
@@ -94,7 +95,10 @@ board.gridManager.GetHeight()];
             GridPosition gridPosition=new GridPosition(board.mishyManager.GetSpawnX(), i);
             if (board.gridManager.HasMishy(gridPosition))
             {
-                OnGameOver?.Invoke(this, board);
+                if (!isGameOverTriggered)
+                {
+                    OnGameOver?.Invoke(this, board);
+                }
             }
         }
 
@@ -134,7 +138,8 @@ board.gridManager.GetHeight()];
 
         if (connected.Count >= 3)
         {
-            List<Mishy> badMishiesToDestroy = new List<Mishy>();
+            HashSet<Mishy> badMishiesToDestroy = new HashSet<Mishy>();
+
             foreach (var mishy in connected)
             {
                 GridPosition mishyPosition = mishy.GetGridPosition();
@@ -146,15 +151,10 @@ board.gridManager.GetHeight()];
                     // 1. 先判断是否越界
                     if (board.gridManager.IsValidGridPosition(testPosition))
                     {
-                        // 2. 再安全地获取咪西，看是不是坏咪西
                         if (board.gridManager.TryGetGridMishy(testPosition, out Mishy mishy_test) &&
                             mishy_test.GetMishyType() == MishyType.BadMishy)
                         {
-                            // 3. 防止同一个坏咪西被多个相邻的普通咪西重复添加
-                            if (!badMishiesToDestroy.Contains(mishy_test))
-                            {
-                                badMishiesToDestroy.Add(mishy_test);
-                            }
+                            badMishiesToDestroy.Add(mishy_test);
                         }
                     }
                 }
@@ -194,6 +194,8 @@ board.gridManager.GetHeight()];
             foreach (var matches in mishyGroups)
             {
                 OnMatchCleared?.Invoke(this, new MatchInfo(matches.Count,currentCombo,GetMatchCenter(matches)));
+
+                CameraShakeManager.instance.ShakeMedium();
 
                 // 销毁并清理网格
                 foreach (Mishy m in matches)

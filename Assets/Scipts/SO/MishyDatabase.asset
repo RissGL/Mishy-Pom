@@ -17,19 +17,29 @@ MonoBehaviour:
     mishyPrefab: {fileID: 6605177402994477819, guid: f1941ad3be7693c4f985d5be46d12fbe, type: 3}
     mishyName: mishy
     debugColor: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 0}
+    mishySprite: {fileID: 21300000, guid: f392618dae215824e8a0326362494492, type: 3}
+    mishyColor: {r: 1, g: 1, b: 1, a: 0}
   - type: 2
     mishyPrefab: {fileID: 1554838942994328914, guid: 2dc41ec90a0887e469640163cb5f3f99, type: 3}
     mishyName: misya
     debugColor: {r: 1, g: 0.56289303, b: 0.8755699, a: 0}
+    mishySprite: {fileID: 21300000, guid: ada8a672a30aa6d418786a4a380b2715, type: 3}
+    mishyColor: {r: 1, g: 1, b: 1, a: 0}
   - type: 3
     mishyPrefab: {fileID: 1554838942994328914, guid: 5f15df1a96a7e8c48997a8e852720ad5, type: 3}
     mishyName: mioshinaidou
     debugColor: {r: 0.8134074, g: 0.8616352, b: 0.19779663, a: 0}
+    mishySprite: {fileID: 21300000, guid: 863851f47913f244c950900e327e8683, type: 3}
+    mishyColor: {r: 1, g: 1, b: 1, a: 0}
   - type: 4
     mishyPrefab: {fileID: 1554838942994328914, guid: 4ab7b8b745a925c449b86698a26c9264, type: 3}
     mishyName: mush
     debugColor: {r: 0.28193605, g: 0.8867924, b: 0.27049944, a: 0}
+    mishySprite: {fileID: 21300000, guid: dd4de4c55c956604992f0ebdeb8ff0e0, type: 3}
+    mishyColor: {r: 1, g: 1, b: 1, a: 0}
   - type: 5
     mishyPrefab: {fileID: 1554838942994328914, guid: 75fc1bdc0b6a0b74fb7e14e96eec8708, type: 3}
     mishyName: BadMishy
     debugColor: {r: 0.70619047, g: 0.008247163, b: 0.8742138, a: 0}
+    mishySprite: {fileID: 21300000, guid: 6a0ee80ccf7a8db49a62bd8e46c8cdb9, type: 3}
+    mishyColor: {r: 1, g: 1, b: 1, a: 0}

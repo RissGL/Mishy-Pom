@@ -292,6 +292,8 @@ public class MishyPlayerController : MonoBehaviour
     {
         isActive = false;
 
+        CameraShakeManager.instance.ShakeMedium();
+
         mishy_One.transform.localPosition = board.gridManager.GetWorldPosition(mishy_One.GetGridPosition());
         mishy_Two.transform.localPosition = board.gridManager.GetWorldPosition(mishy_Two.GetGridPosition());
 

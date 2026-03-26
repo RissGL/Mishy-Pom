@@ -51,6 +51,8 @@ public class SkillSystem : MonoBehaviour
 
         if (board.skillBeamEffect != null)
         {
+            CameraShakeManager.instance.ShakeHeavy();
+
             OnSkillCast?.Invoke(this, new SkillUseInfo(skillType, currentCount));
 
             board.skillBeamEffect.PlayEffect(() => 

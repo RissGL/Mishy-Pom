@@ -73,6 +73,7 @@ public class NextPushUpColumnMishy : MonoBehaviour
     /// </summary>
     public void PushMultiColumnMishyUp(int rowCount = 1)
     {
+        CameraShakeManager.instance.ShakeHeavy();
         MishyType[][] rowsToPush = new MishyType[rowCount][];
 
         rowsToPush[rowCount - 1] = (MishyType[])previewMishies.Clone();
