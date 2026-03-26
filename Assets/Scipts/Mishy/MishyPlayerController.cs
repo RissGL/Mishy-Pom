@@ -81,6 +81,9 @@ public class MishyPlayerController : MonoBehaviour
         if (!isActive) 
             return;
 
+        if (PlayerManager.CurrentState != PlayerManager.GameState.Playing)
+            return;
+
         if (leftMoveAction.action.WasPressedThisFrame())
         {
             TryMove(new GridPosition(-1,0));

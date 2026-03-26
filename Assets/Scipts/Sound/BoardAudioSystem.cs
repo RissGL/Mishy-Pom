@@ -21,6 +21,7 @@ public class BoardAudioSystem : MonoBehaviour
     [SerializeField] private AudioClip swapClipDown;// 交换
     [SerializeField] private AudioClip hardDropClip;  // 快速下落砸地
     [SerializeField] private AudioClip errorClip;     // 撞墙/错误
+    [SerializeField] private AudioClip countdownClip; //倒计时音效
 
     private void Awake()
     {
@@ -28,6 +29,13 @@ public class BoardAudioSystem : MonoBehaviour
         board = GetComponent<PlayerBoard>();
 
         audioSource.playOnAwake = false;
+        CountdownUI.OnCountdownStart += CountdownUI_OnCountdownStart;
+    }
+
+    private void CountdownUI_OnCountdownStart(object sender, System.EventArgs e)
+    {
+        audioSource.pitch = 1f;
+        audioSource.PlayOneShot(countdownClip);
     }
 
     private void Start()
@@ -39,6 +47,7 @@ public class BoardAudioSystem : MonoBehaviour
 
         board.skillSystem.OnSkillCast += SkillSystem_OnSkillUse;
         board.pushUpColumn.OnMultiMishyPushUp += PushUpColumn_OnMultiMishyPushUp;
+        
     }
 
     private void OnDestroy()
@@ -50,6 +59,8 @@ public class BoardAudioSystem : MonoBehaviour
 
         board.skillSystem.OnSkillExecute -= SkillSystem_OnSkillUse;
         board.pushUpColumn.OnMultiMishyPushUp -= PushUpColumn_OnMultiMishyPushUp;
+        CountdownUI.OnCountdownStart -= CountdownUI_OnCountdownStart;
+
     }
 
     private void PushUpColumn_OnMultiMishyPushUp(object sender, MishyType[][] e)

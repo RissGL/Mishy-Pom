@@ -436,8 +436,9 @@ MonoBehaviour:
   moveClip: {fileID: 8300000, guid: cce102c62e2fcae4db04023f20555ca8, type: 3}
   swapClipUp: {fileID: 8300000, guid: ae30a947316440b4483e9f672a59adf4, type: 3}
   swapClipDown: {fileID: 8300000, guid: 8143b89dcbb8817449e7ebcea35c8f04, type: 3}
-  hardDropClip: {fileID: 8300000, guid: 5df93bda2dff3bd40b5a4931a05a2dcd, type: 3}
+  hardDropClip: {fileID: 8300000, guid: 943e14ed49dd6164b96319ba51d7afa2, type: 3}
   errorClip: {fileID: 0}
+  countdownClip: {fileID: 8300000, guid: 2a634346daa4b4d4eb5afd746333f098, type: 3}
 --- !u!82 &59170506574966330
 AudioSource:
   m_ObjectHideFlags: 0
