@@ -15,7 +15,8 @@ public class VEFManager : MonoBehaviour
 
     private void MatchSystem_OnBadMishyClear(object sender, Vector3 e)
     {
-
+        FloatingScoreText floatingScoreText = Instantiate(floatingScoreVfx, e, Quaternion.identity);
+        floatingScoreText.BadMishyScoreSetUp();
     }
 
     private void OnDestroy()

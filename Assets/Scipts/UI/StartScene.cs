@@ -7,8 +7,13 @@ using UnityEngine.UI;
 
 public class StartScene : MonoBehaviour
 {
-    [SerializeField] private Button startButton;
+    [Header("°´Å¥")]
+    [SerializeField] private Button pvpButton;
+    [SerializeField] private Button pveButton;
+    [SerializeField] private Button singleButton;
     [SerializeField] private Button exitButton;
+
+    [Header("UI")]
     [SerializeField] private GameObject backGround;
     [SerializeField] private GameObject slider;
     [SerializeField] private Image sliderImage;
@@ -17,12 +22,27 @@ public class StartScene : MonoBehaviour
     private void Awake()
     {
         slider.gameObject.SetActive(false);
-        startButton.onClick.AddListener(StartButton_OnClick);
+        singleButton.onClick.AddListener(() => 
+        {
+            StartButton_OnClick(GameModeManager.GameMode.SinglePlayer);
+        });
+
+        pveButton.onClick.AddListener(() =>
+        {
+            StartButton_OnClick(GameModeManager.GameMode.PvE);
+        });
+
+        pvpButton.onClick.AddListener(() => 
+        {
+            StartButton_OnClick(GameModeManager.GameMode.PvP);
+        });
         exitButton.onClick.AddListener(() => { Application.Quit(); });
     }
 
-    private void StartButton_OnClick()
+    private void StartButton_OnClick(GameModeManager.GameMode mode)
     {
+        GameModeManager.currentGameMode= mode;
+
         DontDestroyOnLoad(gameObject);
         StartCoroutine(LoadSceneAsync(SceneName.BATTLE_GAME_SCENE));
     }
@@ -32,7 +52,9 @@ public class StartScene : MonoBehaviour
         AsyncOperation ac = SceneManager.LoadSceneAsync(sceneName);
         slider.gameObject.SetActive(true);
         backGround.gameObject.SetActive(false);
-        startButton.gameObject.SetActive(false);
+        singleButton.gameObject.SetActive(false);
+        pveButton.gameObject.SetActive(false);
+        pvpButton.gameObject.SetActive(false);
         sliderImage.fillAmount = 0;
         exitButton.gameObject.SetActive(false);
 
