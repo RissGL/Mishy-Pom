@@ -30,6 +30,29 @@ public class PlayerManager : MonoBehaviour
     [Header("µ¹¼ÆÊ±")]
     [SerializeField] private CountdownUI countdownUI;
 
+    public void InitGameMode() 
+    {
+        GameModeManager.GameMode mode=GameModeManager.currentGameMode;
+
+        switch (mode)
+        {
+            case GameModeManager.GameMode.PvP:
+                break;
+                case GameModeManager.GameMode.PvE:
+                PlayerInputHandler p2Input = player_two.GetComponentInChildren<PlayerInputHandler>();
+                if (p2Input != null)
+                {
+                    Destroy(p2Input); 
+                }
+                player_two.playerController.gameObject.AddComponent<AIBrain>();
+                break;
+            case GameModeManager.GameMode.SinglePlayer:
+                player_two.gameObject.SetActive(false);
+                break;
+        }
+    }
+
+
     private void Update()
     {
         if (CurrentState == GameState.GameOver)
@@ -84,6 +107,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
+        InitGameMode();
+
         countdownUI.StartCountdown();
     }
 

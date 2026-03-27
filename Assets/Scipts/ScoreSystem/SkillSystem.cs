@@ -8,7 +8,7 @@ public class SkillSystem : MonoBehaviour
 {
     private PlayerBoard board;
 
-    private int columnUpCount = 0;
+    private int columnChangeCount = 0;
     public event EventHandler<SkillUseInfo> OnSkillExecute;
     public event EventHandler<SkillUseInfo> OnSkillCast;
 
@@ -17,6 +17,8 @@ public class SkillSystem : MonoBehaviour
     [Header("¼¼ÄÜ°´¼üÅäÖÃ")]
     public InputActionReference skillSelfAction;
     public InputActionReference skillEnemyAction;
+
+    public int GetMatchColumn()=>columnChangeCount;
 
 
     private void Awake()
@@ -31,11 +33,11 @@ public class SkillSystem : MonoBehaviour
 
     public void UseSkill(bool skillType)
     {
-        if (columnUpCount < 1)
+        if (columnChangeCount < 1)
         {
             return;
         }
-        int currentCount = columnUpCount;
+        int currentCount = columnChangeCount;
 
         if (board.skillBeamEffect != null)
         {
@@ -53,7 +55,7 @@ public class SkillSystem : MonoBehaviour
             OnSkillExecute?.Invoke(this, new SkillUseInfo(skillType, currentCount));
         }
 
-        columnUpCount = 0;
+        columnChangeCount = 0;
 
         skillSystemVisual.SetSkillPointVisual(false);
     }
@@ -87,8 +89,8 @@ public class SkillSystem : MonoBehaviour
     }
     private void ScoreSystem_OnUpdateScore(object sender, int e)
     {
-        columnUpCount = e / 100;
-        if(columnUpCount>0)
+        columnChangeCount = e / 100;
+        if(columnChangeCount>0)
         {
             skillSystemVisual.SetSkillPointVisual(true);
         }

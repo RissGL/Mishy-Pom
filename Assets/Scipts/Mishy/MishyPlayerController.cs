@@ -31,6 +31,11 @@ public class MishyPlayerController : MonoBehaviour
 
     public bool IsHoldingFastFall { get; set; }
 
+    public Mishy GetMishyOne()=> mishy_One;
+    public Mishy GetMishyTwo()=> mishy_Two;
+    public bool GetIsActive() => isActive;
+
+
     [Header("¼¼ÄÜ°´¼üÅäÖÃ")]
     public InputActionReference leftMoveAction;
     public InputActionReference rightMoveAction;

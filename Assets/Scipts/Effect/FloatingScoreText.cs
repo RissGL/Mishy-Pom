@@ -41,7 +41,7 @@ public class FloatingScoreText : MonoBehaviour
 
     public void BadMishyScoreSetUp()
     {
-        scoreText.text = $"<size=150%><gradient=GoldGradient>{100} </gradient></size>ScoreScore";
+        scoreText.text = $"+<size=150%><gradient=GoldGradient>{100} </gradient></size>Score";
 
         color = scoreText.color;
         transform.position -= Vector3.forward;

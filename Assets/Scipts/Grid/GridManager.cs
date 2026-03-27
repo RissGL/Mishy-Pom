@@ -12,6 +12,7 @@ public class GridManager : MonoBehaviour
     private GridSystem<GridObject> gridSystem;
     [SerializeField] private Vector3 originPosition;
 
+    private PlayerBoard board;
 
     private void Awake()
     {
@@ -25,6 +26,7 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
+        board = GetComponentInParent<PlayerBoard>();
         //board.mishyManager.SetUp(gridSystem);
     }
 
@@ -138,5 +140,18 @@ public class GridManager : MonoBehaviour
         }
 
         return mishyTypes;
+    }
+
+    public int GetSpawnXTopY() 
+    {
+        int x = board.mishyManager.GetSpawnX();
+        for (int y = 0; y < height; y++)
+        {
+            if (!HasMishy(new GridPosition(x,y)))
+            {
+                return y;
+            }
+        }
+        return 0;
     }
 }
