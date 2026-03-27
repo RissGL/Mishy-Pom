@@ -261,6 +261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3390728888139924499}
   - component: {fileID: 8667212401633874186}
+  - component: {fileID: 6711191982503009938}
   m_Layer: 0
   m_Name: MishyPlayerController
   m_TagString: Untagged
@@ -304,6 +305,24 @@ MonoBehaviour:
   rightMoveAction: {fileID: 6569265660661465894, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
   swapAction: {fileID: -5409261915416559241, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
   fastFallAction: {fileID: 9169765440923743851, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+--- !u!114 &6711191982503009938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6857728332936666791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0563e64fe28a374981c095351c3a42c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftMoveAction: {fileID: 8145692083317497313, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+  rightMoveAction: {fileID: 6569265660661465894, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+  swapAction: {fileID: -5409261915416559241, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+  fastFallAction: {fileID: 9169765440923743851, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+  attackSkill: {fileID: 4233131779524928689, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+  defSkill: {fileID: 1861690253333888664, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
 --- !u!1 &7157667865400159427
 GameObject:
   m_ObjectHideFlags: 0

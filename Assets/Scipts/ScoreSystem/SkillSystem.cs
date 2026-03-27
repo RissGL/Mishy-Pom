@@ -29,18 +29,6 @@ public class SkillSystem : MonoBehaviour
         skillSystemVisual = GetComponent<SkillSystemVisual>();
     }
 
-    private void Update()
-    {
-        if (skillSelfAction.action.WasPressedThisFrame())
-        {
-            UseSkill(false);
-        }
-
-        if (skillEnemyAction.action.WasPressedThisFrame())
-        {
-            UseSkill(true);
-        }
-    }
     public void UseSkill(bool skillType)
     {
         if (columnUpCount < 1)

@@ -48,6 +48,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: defSkill
+      value: 
+      objectReference: {fileID: -8766242103366387447, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: swapAction
+      value: 
+      objectReference: {fileID: 5515487032331572271, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: attackSkill
+      value: 
+      objectReference: {fileID: 4347057925709486155, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: fastFallAction
+      value: 
+      objectReference: {fileID: -169565593819192490, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: leftMoveAction
+      value: 
+      objectReference: {fileID: 7942815144077577218, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
+    - target: {fileID: 6711191982503009938, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
+      propertyPath: rightMoveAction
+      value: 
+      objectReference: {fileID: 8873749177345347100, guid: 05e25b3936d00d34eb2fc06a4899abe7, type: 3}
     - target: {fileID: 6821799828792667430, guid: b7d58c3d8948d4340b11f82fdaf150b3, type: 3}
       propertyPath: skillSelfAction
       value: 
