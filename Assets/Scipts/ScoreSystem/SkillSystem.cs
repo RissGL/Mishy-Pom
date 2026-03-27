@@ -31,10 +31,20 @@ public class SkillSystem : MonoBehaviour
         skillSystemVisual = GetComponent<SkillSystemVisual>();
     }
 
+    /// <summary>
+    /// true是攻击。false是防御
+    /// </summary>
+    /// <param name="skillType"></param>
     public void UseSkill(bool skillType)
     {
         if (columnChangeCount < 1)
         {
+            return;
+        }
+
+        if (board.matchSystem.IsMatching)
+        {
+            //消除的时候不能释放技能
             return;
         }
         int currentCount = columnChangeCount;

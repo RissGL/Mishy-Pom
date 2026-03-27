@@ -43,6 +43,14 @@ public class MishyManager : MonoBehaviour
 
     public event EventHandler<int> OnTurnPushNumUpdate;//更新推上来行数UI用的事件
 
+    public void SetBasePushUpChance(float basePushUpChance) 
+    {
+        this.basePushUpChance = basePushUpChance;
+    }
+    public void SetChanceUpPerHalfMinute(float chanceUpPerHalfMinute)
+    {
+        this.chanceUpPerHalfMinute = chanceUpPerHalfMinute;
+    }
 
     private void Update()
     {
