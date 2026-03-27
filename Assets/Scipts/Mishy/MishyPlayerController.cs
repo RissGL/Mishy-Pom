@@ -29,6 +29,8 @@ public class MishyPlayerController : MonoBehaviour
 
     private float moveSpeed=30f;//左右移动的速度
 
+    public bool IsHoldingFastFall { get; set; }
+
     [Header("技能按键配置")]
     public InputActionReference leftMoveAction;
     public InputActionReference rightMoveAction;
@@ -84,58 +86,20 @@ public class MishyPlayerController : MonoBehaviour
         if (PlayerManager.CurrentState != PlayerManager.GameState.Playing)
             return;
 
-        if (leftMoveAction.action.WasPressedThisFrame())
+        if (autoFastFallTimer > 0f)
         {
-            TryMove(new GridPosition(-1,0));
-
-            //TODO: 检测是否能动，不能未来要触发错误音效
+            autoFastFallTimer -= Time.deltaTime;
         }
 
-        if (rightMoveAction.action.WasPressedThisFrame())
-        {
-            TryMove(new GridPosition(1, 0));
+        bool isHoldingS = IsHoldingFastFall && autoFastFallTimer <= 0;
+        float targetFallInterval = isHoldingS ? fastFallInterval : fallInterval;
 
-            //TODO: 检测是否能动，不能未来要触发错误音效
-        }
-
-        if (swapAction.action.WasPressedThisFrame())
-        {
-            SwapMishies();
-
-            board.boardAudioSystem.PlaySwapSound();
-        }
-
-        if (fastFallAction.action.WasPressedThisFrame())
-        {
-            autoFastFallTimer = 0;
-        }
-
-
-        if (autoFastFallTimer>0f)
-        {
-            autoFastFallTimer-=Time.deltaTime;
-        }
-        bool isHoldingS = fastFallAction.action.IsPressed()&&autoFastFallTimer<=0;
-        float targetFallInterval =isHoldingS ? fastFallInterval : fallInterval;
-
-        //利用百分比同步下落进度
         if (currentFallInterval != targetFallInterval)
         {
-            float process=fallTimer/currentFallInterval;
-            currentFallInterval=targetFallInterval;
-            fallTimer=currentFallInterval*process;
+            float process = fallTimer / currentFallInterval;
+            currentFallInterval = targetFallInterval;
+            fallTimer = currentFallInterval * process;
         }
-
-        /*if (Input.GetKeyDown(KeyCode.S))
-        {
-            currentFallInterval = fastFallInterval;
-            if (fallTimer > currentFallInterval) 
-            {
-                fallTimer = currentFallInterval; 
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.S)) currentFallInterval = fallInterval;*/
-
 
         fallTimer += Time.deltaTime;
         while (fallTimer >= currentFallInterval)
@@ -150,6 +114,31 @@ public class MishyPlayerController : MonoBehaviour
         }
 
         UpdateVisuals();
+    }
+
+    public void CmdMoveLeft()
+    {
+        if (!isActive) return;
+        TryMove(new GridPosition(-1, 0));
+    }
+
+    public void CmdMoveRight()
+    {
+        if (!isActive) return;
+        TryMove(new GridPosition(1, 0));
+    }
+
+    public void CmdSwap()
+    {
+        if (!isActive) return;
+        SwapMishies();
+        board.boardAudioSystem.PlaySwapSound();
+    }
+
+    public void CmdFastFallTrigger()
+    {
+        if (!isActive) return;
+        autoFastFallTimer = 0;
     }
 
     private void UpdateVisuals()
