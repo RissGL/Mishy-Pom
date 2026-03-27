@@ -18,6 +18,8 @@ public class StartScene : MonoBehaviour
     [SerializeField] private GameObject slider;
     [SerializeField] private Image sliderImage;
 
+    [SerializeField] private DifficultyChangeUI difficultyChangeUI;
+
 
     private void Awake()
     {
@@ -29,7 +31,8 @@ public class StartScene : MonoBehaviour
 
         pveButton.onClick.AddListener(() =>
         {
-            StartButton_OnClick(GameModeManager.GameMode.PvE);
+            GameModeManager.currentGameMode = GameModeManager.GameMode.PvE;
+            difficultyChangeUI.Show(this);
         });
 
         pvpButton.onClick.AddListener(() => 
@@ -43,6 +46,12 @@ public class StartScene : MonoBehaviour
     {
         GameModeManager.currentGameMode= mode;
 
+        DontDestroyOnLoad(gameObject);
+        StartCoroutine(LoadSceneAsync(SceneName.BATTLE_GAME_SCENE));
+    }
+
+    public void LoadBattleScene()
+    {
         DontDestroyOnLoad(gameObject);
         StartCoroutine(LoadSceneAsync(SceneName.BATTLE_GAME_SCENE));
     }

@@ -9,14 +9,21 @@ public class AIBrain : MonoBehaviour
     private SkillSystem skillSystem;
 
     private bool isThinkingMoving = false;
-    private PlayerBoard board;
+    private PlayerBoard aiBoard;
+
+    private PlayerBoard playerBoard;
+
+    public void SetPlayerBoard(PlayerBoard playerBoard)
+    {
+        this.playerBoard = playerBoard;
+    }
 
     private void Awake()
     {
         controller=GetComponent <MishyPlayerController>();
         
-        board=GetComponentInParent<PlayerBoard>();
-        skillSystem=board.skillSystem;
+        aiBoard=GetComponentInParent<PlayerBoard>();
+        skillSystem=aiBoard.skillSystem;
     }
 
     private void Update()
@@ -33,8 +40,47 @@ public class AIBrain : MonoBehaviour
     private IEnumerator AILoopRoutine()
     {
         isThinkingMoving=true;
+        var config = GameModeManager.GetDifficultyConfig();
 
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(config.thinkTime);
+
+        if (aiBoard.skillSystem.GetMatchColumn() > 0)
+        {
+            int defScore = -300;
+            int attackScore = -300;
+
+            if (aiBoard.mishyManager.GetSpawnY() - aiBoard.gridManager.GetSpawnXTopY()-1
+                <= playerBoard.skillSystem.GetMatchColumn())//¼õ1Ô¤Áô»º³å¿Õ¼ä
+            {
+                defScore += 500;
+            }
+
+            if (playerBoard.mishyManager.GetSpawnY()-playerBoard.gridManager.GetSpawnXTopY()-1<=
+                aiBoard.skillSystem.GetMatchColumn()-playerBoard.skillSystem.GetMatchColumn())
+            {
+                attackScore += 800;
+            }
+
+            if (playerBoard.mishyManager.GetSpawnY() - playerBoard.gridManager.GetSpawnXTopY()-1 <=
+            aiBoard.skillSystem.GetMatchColumn())
+            {
+                attackScore += 400;
+            }
+
+            if (attackScore > 0 || defScore > 0)
+            {
+                if (attackScore > defScore)
+                {
+                    aiBoard.skillSystem.UseSkill(true);
+                }
+                else 
+                {
+                    aiBoard.skillSystem.UseSkill(false);
+                }
+            }
+            yield return new WaitForSeconds(config.thinkTime);
+        }
+
 
         Mishy mishy_one=controller.GetMishyOne();
         Mishy mishy_two=controller.GetMishyTwo();
@@ -51,7 +97,7 @@ public class AIBrain : MonoBehaviour
         float bestScore = -9999f;
         int bestX = 0;
         bool bestSwap=false;
-        int width = board.gridManager.GetWidth();
+        int width = aiBoard.gridManager.GetWidth();
 
         for (int x = 0; x < width; x++)
         {
@@ -78,7 +124,7 @@ public class AIBrain : MonoBehaviour
         if (bestSwap) 
         {
             controller.CmdSwap();
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(config.thinkTime);
         }
 
         if (!controller.GetIsActive() || controller.GetMishyOne() == null)
@@ -102,12 +148,12 @@ public class AIBrain : MonoBehaviour
                 currentX--;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(config.moveTime);
         }
 
         if (controller.GetIsActive()) 
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(config.thinkTime);
             controller.IsHoldingFastFall = true;
             controller.CmdFastFallTrigger();
         }
@@ -132,9 +178,9 @@ public class AIBrain : MonoBehaviour
 
     private int GetDropY(int x)
     {
-        for (int y = 0; y < board.gridManager.GetHeight(); y++) 
+        for (int y = 0; y < aiBoard.gridManager.GetHeight(); y++) 
         {
-            if (!board.gridManager.HasMishy(new GridPosition(x, y)))
+            if (!aiBoard.gridManager.HasMishy(new GridPosition(x, y)))
             {
                 return y;
             }
@@ -144,7 +190,7 @@ public class AIBrain : MonoBehaviour
 
     private bool CheckType(int x,int y,MishyType mishyType)
     {
-        if (board.gridManager.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
+        if (aiBoard.gridManager.TryGetGridMishy(new GridPosition(x, y), out Mishy mishy))
         {
             if (mishy.GetMishyType() == mishyType)
             {

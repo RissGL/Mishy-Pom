@@ -39,12 +39,16 @@ public class PlayerManager : MonoBehaviour
             case GameModeManager.GameMode.PvP:
                 break;
                 case GameModeManager.GameMode.PvE:
+                var config=GameModeManager.GetDifficultyConfig();
                 PlayerInputHandler p2Input = player_two.GetComponentInChildren<PlayerInputHandler>();
                 if (p2Input != null)
                 {
                     Destroy(p2Input); 
                 }
-                player_two.playerController.gameObject.AddComponent<AIBrain>();
+                AIBrain aIBrain= player_two.playerController.gameObject.AddComponent<AIBrain>();
+                aIBrain.SetPlayerBoard(player_one);
+                player_two.mishyManager.SetBasePushUpChance(config.basePushUpChance);
+                player_two.mishyManager.SetChanceUpPerHalfMinute(config.chanceUpPerHalfMin);
                 break;
             case GameModeManager.GameMode.SinglePlayer:
                 player_two.gameObject.SetActive(false);
