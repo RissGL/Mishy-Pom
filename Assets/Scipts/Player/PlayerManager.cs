@@ -49,6 +49,7 @@ public class PlayerManager : MonoBehaviour
                 aIBrain.SetPlayerBoard(player_one);
                 player_two.mishyManager.SetBasePushUpChance(config.basePushUpChance);
                 player_two.mishyManager.SetChanceUpPerHalfMinute(config.chanceUpPerHalfMin);
+                player_two.mishyManager.SetMaxPushUpChance(config.maxPushUpChance);
                 break;
             case GameModeManager.GameMode.SinglePlayer:
                 player_two.gameObject.SetActive(false);
