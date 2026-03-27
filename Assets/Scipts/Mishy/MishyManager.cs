@@ -51,7 +51,10 @@ public class MishyManager : MonoBehaviour
     {
         this.chanceUpPerHalfMinute = chanceUpPerHalfMinute;
     }
-
+    public void SetMaxPushUpChance(float maxPushUpChance)
+    {
+        this.maxPushUpChance = maxPushUpChance;
+    }
     private void Update()
     {
         gameTimer += Time.deltaTime;
@@ -420,6 +423,10 @@ public class MishyManager : MonoBehaviour
     /// </summary>
     public void SpawnNextPair()
     {
+        if (mishyPlayerController.GetIsActive())
+        {
+            return; 
+        }
         if (currentMishyPairType!=null)
         {
             Mishy mishy_One = SpawnMishy(SpawnGridPositionDown, currentMishyPairType[0]);

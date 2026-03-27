@@ -35,7 +35,8 @@ public static class GameModeManager
                     thinkTime = 1.5f,
                     moveTime=0.4f,
                     basePushUpChance=12.5f,
-                    chanceUpPerHalfMin=3f
+                    chanceUpPerHalfMin=3f,
+                    maxPushUpChance = 30f
                 };
                 break;
             case Difficulty.Easy:
@@ -44,23 +45,26 @@ public static class GameModeManager
                     thinkTime = 1f,
                     moveTime = 0.35f,
                     basePushUpChance = 12.5f,
-                    chanceUpPerHalfMin = 3f
+                    chanceUpPerHalfMin = 3f,
+                    maxPushUpChance = 20f
                 };
             case Difficulty.Normal:
                 return new DifficultyConfig
                 {
-                    thinkTime = 0.6f,
-                    moveTime = 0.2f,
+                    thinkTime = 0.7f,
+                    moveTime = 0.25f,
                     basePushUpChance = 10f,
-                    chanceUpPerHalfMin = 2.5f
+                    chanceUpPerHalfMin = 2.5f,
+                    maxPushUpChance = 20f
                 };
             case Difficulty.Hard:
                 return new DifficultyConfig
                 {
-                    thinkTime = 0.4f,
+                    thinkTime = 0.45f,
                     moveTime = 0.2f,
                     basePushUpChance = 7.5f,
-                    chanceUpPerHalfMin = 2.25f
+                    chanceUpPerHalfMin = 2.5f,
+                    maxPushUpChance = 25f
                 };
             case Difficulty.NightMare:
                 return new DifficultyConfig
@@ -68,15 +72,17 @@ public static class GameModeManager
                     thinkTime = 0.2f,
                     moveTime = 0.2f,
                     basePushUpChance = 6f,
-                    chanceUpPerHalfMin = 2f
+                    chanceUpPerHalfMin = 3f,
+                    maxPushUpChance = 30f
                 };
             case Difficulty.Abyss:
                 return new DifficultyConfig
                 {
                     thinkTime = 0.08f,
                     moveTime = 0.1f,
-                    basePushUpChance = 6f,
-                    chanceUpPerHalfMin = 2f
+                    basePushUpChance = 10f,
+                    chanceUpPerHalfMin = 4f,
+                    maxPushUpChance=30f
                 }; 
             break;
                 default:
@@ -84,7 +90,8 @@ public static class GameModeManager
                     thinkTime = 1f,
                     moveTime = 0.3f,
                     basePushUpChance = 10f,
-                    chanceUpPerHalfMin = 2.5f
+                    chanceUpPerHalfMin = 2.5f,
+                    maxPushUpChance = 30f
                 };
         }
     }
@@ -95,5 +102,6 @@ public static class GameModeManager
         public float moveTime;
         public float basePushUpChance;    // push基础概率
         public float chanceUpPerHalfMin;  // push概率增长速度
+        public float maxPushUpChance;
     }
 }

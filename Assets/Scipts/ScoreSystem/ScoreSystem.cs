@@ -16,6 +16,7 @@ public class ScoreSystem : MonoBehaviour
     private const int CLEAR_BAD_MISHY_SCORE = 100;
 
     public event EventHandler<ScoreAddedEventArgs> OnAddScore;
+    public int GetCurrentScore() => score;
 
     public class ScoreAddedEventArgs : EventArgs
     {

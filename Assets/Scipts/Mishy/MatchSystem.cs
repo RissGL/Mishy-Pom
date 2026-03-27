@@ -273,7 +273,8 @@ board.gridManager.GetHeight()];
 
         yield return StartCoroutine(board.mishyManager.ApplyGravityRoutine());
         //board.mishyManager.SpawnNextPair();
-        board.mishyManager.OnTurnSettlementFinished();
+        //board.mishyManager.OnTurnSettlementFinished();
         IsMatching = false;
+        StartMatchSequence();
     }
 }

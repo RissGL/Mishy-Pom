@@ -33,6 +33,8 @@ public class AIBrain : MonoBehaviour
 
         if (controller.GetIsActive() && !isThinkingMoving)
         {
+            if (PlayerManager.CurrentState != PlayerManager.GameState.Playing)
+                return;
             StartCoroutine(AILoopRoutine());
         }
     }
@@ -42,29 +44,57 @@ public class AIBrain : MonoBehaviour
         isThinkingMoving=true;
         var config = GameModeManager.GetDifficultyConfig();
 
+
         yield return new WaitForSeconds(config.thinkTime);
 
         if (aiBoard.skillSystem.GetMatchColumn() > 0)
         {
-            int defScore = -300;
-            int attackScore = -300;
+            int aiSafeDist = aiBoard.mishyManager.GetSpawnY() - aiBoard.gridManager.GetSpawnXTopY() - 1;
+            int playerSafeDist = playerBoard.mishyManager.GetSpawnY() - playerBoard.gridManager.GetSpawnXTopY() - 1;
 
-            if (aiBoard.mishyManager.GetSpawnY() - aiBoard.gridManager.GetSpawnXTopY()-1
-                <= playerBoard.skillSystem.GetMatchColumn())//减1预留缓冲空间
+            int aiSkills = aiBoard.skillSystem.GetMatchColumn();
+            int playerSkills = playerBoard.skillSystem.GetMatchColumn();
+
+            int rawScore = aiBoard.scoreSystem.GetCurrentScore();
+            int wastedPoints = rawScore % 100;
+
+            int defScore = 0;
+            int attackScore = 0;
+
+            if (aiSafeDist <= 4)
             {
-                defScore += 500;
+                defScore += 10000; 
+            }
+            else if (aiSafeDist <= 8 && (aiSafeDist - playerSkills) <= 2 && aiSkills >= 1)
+            {
+                defScore += 500; 
             }
 
-            if (playerBoard.mishyManager.GetSpawnY()-playerBoard.gridManager.GetSpawnXTopY()-1<=
-                aiBoard.skillSystem.GetMatchColumn()-playerBoard.skillSystem.GetMatchColumn())
+            if (defScore == 0)
             {
-                attackScore += 800;
+                if (playerSafeDist <= aiSkills - playerSkills)
+                {
+                    attackScore += 10000;
+                }
+                else if (aiSkills >= 3 && playerSafeDist <= aiSkills + 6)
+                {
+                    attackScore += 800;
+                }
+                else if (aiSkills >= 5)
+                {
+                    attackScore += 500;
+                }
             }
 
-            if (playerBoard.mishyManager.GetSpawnY() - playerBoard.gridManager.GetSpawnXTopY()-1 <=
-            aiBoard.skillSystem.GetMatchColumn())
+            // 如果不是“生死攸关”的绝杀或濒死时刻
+            // 并且当前被浪费的分数比较多
+            // 并且总层数还没到大后期
+            bool isEmergency = (defScore >= 10000 || attackScore >= 10000);
+
+            if (!isEmergency && aiSkills < 7 && wastedPoints >= 60)
             {
-                attackScore += 400;
+                attackScore = 0;
+                defScore = 0;
             }
 
             if (attackScore > 0 || defScore > 0)
@@ -73,12 +103,12 @@ public class AIBrain : MonoBehaviour
                 {
                     aiBoard.skillSystem.UseSkill(true);
                 }
-                else 
+                else
                 {
                     aiBoard.skillSystem.UseSkill(false);
                 }
+                yield return new WaitForSeconds(config.thinkTime);
             }
-            yield return new WaitForSeconds(config.thinkTime);
         }
 
 
@@ -166,10 +196,18 @@ public class AIBrain : MonoBehaviour
     private float EvaluatePlacement(int x, MishyType bottomType, MishyType topType) 
     {
         float score = 0;
-
         int dropY = GetDropY(x);
 
-        score -= dropY * 6;
+        int dangerLine = aiBoard.mishyManager.GetSpawnY() - 4;//离的近掉分快
+        if (dropY >= dangerLine)
+        {
+            score -= (dropY - dangerLine + 1) * 200f; 
+        }
+        else
+        {
+            score -= dropY * 1.5f; 
+        }
+
         score += GetMatchBonus(x, dropY, bottomType);
         score += GetMatchBonus(x, dropY + 1, topType);
 
@@ -185,7 +223,7 @@ public class AIBrain : MonoBehaviour
                 return y;
             }
         }
-        return 0;
+        return aiBoard.gridManager.GetHeight() - 1;
     }
 
     private bool CheckType(int x,int y,MishyType mishyType)
@@ -208,9 +246,31 @@ public class AIBrain : MonoBehaviour
     {
         float bonus = 0;
 
-        if (CheckType(x - 1, y, type)) bonus += 50f;
-        if (CheckType(x + 1, y, type)) bonus += 50f;
-        if (CheckType(x, y - 1, type)) bonus += 55f;
+        if (CheckType(x - 1, y, type)) bonus += 20f;
+        if (CheckType(x + 1, y, type)) bonus += 20f;
+        if (CheckType(x, y - 1, type)) bonus += 20f;
+
+        bool isMatch = false;
+        if (CheckType(x - 1, y, type) && CheckType(x - 2, y, type)) isMatch = true;
+        if (CheckType(x + 1, y, type) && CheckType(x + 2, y, type)) isMatch = true;
+        if (CheckType(x, y - 1, type) && CheckType(x, y - 2, type)) isMatch = true;
+        if (CheckType(x - 1, y, type) && CheckType(x + 1, y, type)) isMatch = true;
+
+        if (isMatch)
+        {
+            bonus += 200f; // 基础消除分
+
+            int blocksAbove = 0;
+
+            for (int checkY = y + 1; checkY < aiBoard.gridManager.GetHeight(); checkY++)
+            {
+                if (aiBoard.gridManager.HasMishy(new GridPosition(x, checkY))) blocksAbove++;
+                if (aiBoard.gridManager.HasMishy(new GridPosition(x - 1, checkY))) blocksAbove++;
+                if (aiBoard.gridManager.HasMishy(new GridPosition(x + 1, checkY))) blocksAbove++;
+            }
+
+            bonus += blocksAbove * 50f;
+        }
 
         return bonus;
     }
