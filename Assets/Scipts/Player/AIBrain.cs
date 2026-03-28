@@ -42,7 +42,7 @@ public class AIBrain : MonoBehaviour
     private IEnumerator AILoopRoutine()
     {
         isThinkingMoving=true;
-        var config = GameModeManager.GetDifficultyConfig();
+        var config = GameConfigManager.Instance.GetCurrentDifficultyConfig();
 
 
         yield return new WaitForSeconds(config.thinkTime);

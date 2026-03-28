@@ -39,7 +39,7 @@ public class PlayerManager : MonoBehaviour
             case GameModeManager.GameMode.PvP:
                 break;
                 case GameModeManager.GameMode.PvE:
-                var config=GameModeManager.GetDifficultyConfig();
+                var config=GameConfigManager.Instance.GetCurrentDifficultyConfig();
                 PlayerInputHandler p2Input = player_two.GetComponentInChildren<PlayerInputHandler>();
                 if (p2Input != null)
                 {

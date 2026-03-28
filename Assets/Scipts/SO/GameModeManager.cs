@@ -25,7 +25,7 @@ public static class GameModeManager
 
     public static Difficulty difficulty { get; set; } = Difficulty.Normal;
 
-    public static DifficultyConfig GetDifficultyConfig()
+    /*public static DifficultyConfig GetDifficultyConfig()
     {
         switch (difficulty)
         {
@@ -94,14 +94,5 @@ public static class GameModeManager
                     maxPushUpChance = 30f
                 };
         }
-    }
-
-    public struct DifficultyConfig 
-    {
-        public float thinkTime;
-        public float moveTime;
-        public float basePushUpChance;    // push基础概率
-        public float chanceUpPerHalfMin;  // push概率增长速度
-        public float maxPushUpChance;
-    }
+    }*/
 }

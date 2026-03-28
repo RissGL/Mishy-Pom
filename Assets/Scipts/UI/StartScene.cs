@@ -12,6 +12,7 @@ public class StartScene : MonoBehaviour
     [SerializeField] private Button pveButton;
     [SerializeField] private Button singleButton;
     [SerializeField] private Button exitButton;
+    [SerializeField] private Button settingButton;
 
     [Header("UI")]
     [SerializeField] private GameObject backGround;
@@ -19,6 +20,7 @@ public class StartScene : MonoBehaviour
     [SerializeField] private Image sliderImage;
 
     [SerializeField] private DifficultyChangeUI difficultyChangeUI;
+    [SerializeField] private SettingUI settingUI;
 
 
     private void Awake()
@@ -38,6 +40,10 @@ public class StartScene : MonoBehaviour
         pvpButton.onClick.AddListener(() => 
         {
             StartButton_OnClick(GameModeManager.GameMode.PvP);
+        });
+        settingButton.onClick.AddListener(() => 
+        {
+            settingUI.Show();
         });
         exitButton.onClick.AddListener(() => { Application.Quit(); });
     }
@@ -64,6 +70,7 @@ public class StartScene : MonoBehaviour
         singleButton.gameObject.SetActive(false);
         pveButton.gameObject.SetActive(false);
         pvpButton.gameObject.SetActive(false);
+        settingButton.gameObject.SetActive(false);
         sliderImage.fillAmount = 0;
         exitButton.gameObject.SetActive(false);
 
