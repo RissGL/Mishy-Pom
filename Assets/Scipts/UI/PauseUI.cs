@@ -32,6 +32,7 @@ public class PauseUI : MonoBehaviour
             Time.timeScale = 1f;//»Ö¸´Ê±¼ä
         });
         Hide();
+        slider.gameObject.SetActive(false);
     }
 
     public void Show(float playTime) 
@@ -39,6 +40,7 @@ public class PauseUI : MonoBehaviour
         gamePlayerTime.text = "Play Time: " + $"<size=130%><gradient=Green>" +
     $"{(Mathf.RoundToInt(playTime).ToString())}" + " </size></gradient>s";
         gameObject.SetActive(true);
+        slider.gameObject.SetActive(false);
     }
 
     public void Hide() 

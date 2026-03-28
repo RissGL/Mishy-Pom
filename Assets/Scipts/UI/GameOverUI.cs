@@ -39,6 +39,7 @@ public class GameOverUI : MonoBehaviour
             $"{(Mathf.RoundToInt(time).ToString())}"  + " </size></gradient>s";
 
         gameObject.SetActive(true);
+        slider.gameObject.SetActive(false);
     }
 
     public void Hide() 

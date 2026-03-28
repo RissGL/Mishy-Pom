@@ -31,6 +31,11 @@ public class BGMManager : MonoBehaviour
 
     public void AddVolume(float addVolume)
     {
-        audioSource.volume += addVolume;
+        audioSource.volume = Mathf.Clamp01(audioSource.volume +addVolume);
+    }
+
+    public float GetVolume() 
+    {
+        return audioSource.volume;
     }
 }

@@ -35,7 +35,7 @@ public class BoardAudioSystem : MonoBehaviour
     private void CountdownUI_OnCountdownStart(object sender, System.EventArgs e)
     {
         audioSource.pitch = 1f;
-        audioSource.PlayOneShot(countdownClip);
+        audioSource.PlayOneShot(countdownClip, SFXConfig.sfxVolume);
     }
 
     private void Start()
@@ -66,7 +66,7 @@ public class BoardAudioSystem : MonoBehaviour
     private void PushUpColumn_OnMultiMishyPushUp(object sender, MishyType[][] e)
     {
         audioSource.pitch = 1f;
-        audioSource.PlayOneShot(pushUpClip);
+        audioSource.PlayOneShot(pushUpClip, SFXConfig.sfxVolume);
     }
 
     private void SkillSystem_OnSkillUse(object sender, SkillSystem.SkillUseInfo e)
@@ -74,25 +74,25 @@ public class BoardAudioSystem : MonoBehaviour
         if (e.isUpToEnemy)
         {
             audioSource.pitch = 1f;
-            audioSource.PlayOneShot(pushSkillClip);
+            audioSource.PlayOneShot(pushSkillClip, SFXConfig.sfxVolume);
         }
         else 
         {
             audioSource.pitch = 1f;
-            audioSource.PlayOneShot(matchKillClip);
+            audioSource.PlayOneShot(matchKillClip, SFXConfig.sfxVolume);
         }
     }
 
     private void MatchSystem_OnGameOver(object sender, PlayerBoard e)
     {
             audioSource.pitch = 1f;
-            audioSource.PlayOneShot(gameOver);
+            audioSource.PlayOneShot(gameOver, SFXConfig.sfxVolume);
     }
 
     private void MatchSystem_OnBadMishyClear(object sender, Vector3 e)
     {
         audioSource.pitch = 1f;
-        audioSource.PlayOneShot(badMishyMatchClip);
+        audioSource.PlayOneShot(badMishyMatchClip, SFXConfig.sfxVolume);
     }
 
     private void MatchSystem_OnMatchCleared(object sender, MatchSystem.MatchInfo e)
@@ -100,37 +100,38 @@ public class BoardAudioSystem : MonoBehaviour
         float pitch = 1.0f + (e.matchCombo - 1) * 0.15f;
 
         pitch = Mathf.Clamp(pitch,1.0f, 2.2f);
+        audioSource.pitch = pitch;
 
-        audioSource.PlayOneShot(matchClip, 0.8f);
+        audioSource.PlayOneShot(matchClip, SFXConfig.sfxVolume);
 
         if (e.matchCombo > 1)
         {
-            audioSource.PlayOneShot(comboClip, 1.0f);
+            audioSource.PlayOneShot(comboClip, SFXConfig.sfxVolume);
         }
     }
 
     private void MatchSystem_OnSkillMatch(object sender, int e)
     {
         audioSource.pitch = 1f;
-        audioSource.PlayOneShot(matchClip, 0.8f);
+        audioSource.PlayOneShot(matchClip, SFXConfig.sfxVolume);
     }
 
     public void PlayMoveSound()
     {
         audioSource.pitch = Random.Range(0.95f, 1.05f);
-        audioSource.PlayOneShot(moveClip, 0.5f);
+        audioSource.PlayOneShot(moveClip, SFXConfig.sfxVolume);
     }
 
     public void PlayErrorSound()
     {
         audioSource.pitch = 1f;
-        audioSource.PlayOneShot(errorClip, 0.6f);
+        audioSource.PlayOneShot(errorClip, SFXConfig.sfxVolume);
     }
 
     public void PlayDropSound()
     {
         audioSource.pitch = Random.Range(0.95f, 1.05f);
-        audioSource.PlayOneShot(hardDropClip, 0.5f);
+        audioSource.PlayOneShot(hardDropClip, SFXConfig.sfxVolume);
     }
 
 
@@ -140,12 +141,12 @@ public class BoardAudioSystem : MonoBehaviour
         audioSource.pitch = Random.Range(0.95f, 1.05f);
         if (swapCount / 2 == 0)
         {
-            audioSource.PlayOneShot(swapClipUp, 0.5f);
+            audioSource.PlayOneShot(swapClipUp, SFXConfig.sfxVolume);
 
         }
         else 
         {
-            audioSource.PlayOneShot(swapClipDown, 0.5f);
+            audioSource.PlayOneShot(swapClipDown, SFXConfig.sfxVolume);
         }
     }
 }

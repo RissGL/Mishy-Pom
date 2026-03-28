@@ -17,7 +17,7 @@ public class FloatingScoreText : MonoBehaviour
         scoreText.text = FormatScoreText( comboNum, score);
 
         color =scoreText.color;
-        transform.position -= Vector3.forward;
+        transform.position -= (5 * Vector3.forward);
 
         StartCoroutine(BounceRoutine());
     }
@@ -44,7 +44,7 @@ public class FloatingScoreText : MonoBehaviour
         scoreText.text = $"+<size=150%><gradient=GoldGradient>{100} </gradient></size>Score";
 
         color = scoreText.color;
-        transform.position -= Vector3.forward;
+        transform.position -= (5*Vector3.forward);
 
         StartCoroutine(BounceRoutine());
     }
