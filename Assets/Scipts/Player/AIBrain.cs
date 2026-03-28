@@ -61,11 +61,11 @@ public class AIBrain : MonoBehaviour
             int defScore = 0;
             int attackScore = 0;
 
-            if (aiSafeDist <= 4)
+            if (aiSafeDist <= 3)
             {
                 defScore += 10000; 
             }
-            else if (aiSafeDist <= 8 && (aiSafeDist - playerSkills) <= 2 && aiSkills >= 1)
+            else if (aiSafeDist <= 6 && (aiSafeDist - playerSkills) <= 2 && aiSkills >= 1)
             {
                 defScore += 500; 
             }

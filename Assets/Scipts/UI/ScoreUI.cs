@@ -46,7 +46,7 @@ public class ScoreUI : MonoBehaviour
 
         if (s.Length >= 3)
         {
-            return $"<size=135>{s[0]}</size>{s.Substring(1)}";
+            return $"<size=130>{s[0]}</size>{s.Substring(1)}";
         }
         return s;
     }

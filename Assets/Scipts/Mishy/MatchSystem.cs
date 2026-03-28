@@ -89,6 +89,7 @@ board.gridManager.GetHeight()];
         MishyType mishyType = board.gridManager.GetGridMishy(startPos).GetMishyType();
         stack.Push(startPos);
 
+        /*
         //判断是否结束游戏
         for (int i = board.mishyManager.GetSpawnY(); i < board.gridManager.GetHeight(); i++)
         {
@@ -102,6 +103,7 @@ board.gridManager.GetHeight()];
                 }
             }
         }
+        */
 
 
         GridPosition[] dirs = {
@@ -182,6 +184,23 @@ board.gridManager.GetHeight()];
 
             if (mishyGroups.Count == 0)
             {
+                //判断是否结束游戏
+                for (int i = board.mishyManager.GetSpawnY(); i < board.gridManager.GetHeight(); i++)
+                {
+                    GridPosition gridPosition = new GridPosition(board.mishyManager.GetSpawnX(), i);
+                    if (board.gridManager.HasMishy(gridPosition))
+                    {
+                        if (!isGameOverTriggered)
+                        {
+                            OnGameOver?.Invoke(this, board);
+                            isGameOverTriggered = true;
+
+                            IsMatching = false;
+                            yield break;
+                        }
+                    }
+                }
+
                 // 没有任何消除，结算结束，重置 Combo
                 currentCombo = 0;
 
@@ -224,6 +243,7 @@ board.gridManager.GetHeight()];
             // 连击数增加，进入下一次循环
             currentCombo++;
         }
+
     }
 
     public Vector3 GetMatchCenter(List<Mishy> mishies) 

@@ -130,7 +130,7 @@ public class MishyPreviewQueueUI : MonoBehaviour
             float easeT = 1f - Mathf.Pow(1f - t, 3f); // 让动画起步快，结尾柔和
 
             rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, easeT);
-            cg.alpha = Mathf.Lerp(1f, 0f, t); // 透明度 255 -> 0 (在 CanvasGroup 里是 1 -> 0)
+            cg.alpha = Mathf.Lerp(1f, 0f, t*2); // 透明度 255 -> 0 (在 CanvasGroup 里是 1 -> 0)
 
             yield return null;
         }
