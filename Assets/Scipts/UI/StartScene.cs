@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -107,8 +108,15 @@ public class StartScene : MonoBehaviour
            (new Vector3(1.02f, 1.02f, 1.02f), 0.4f)
            .SetEase(Ease.InOutSine)
            .SetLoops(-1, LoopType.Yoyo);
+
+                SetSelectedButton();
             });
-        
        
+    }
+
+    public void SetSelectedButton() 
+    {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(pveButton.gameObject);
     }
 }

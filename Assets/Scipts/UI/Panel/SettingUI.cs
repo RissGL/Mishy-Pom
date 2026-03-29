@@ -19,6 +19,9 @@ public class SettingUI :BasePanel
 
     [SerializeField] private BasePanel basePanel;
 
+    [Header("开始界面，用于选择")]
+    [SerializeField] private StartScene startScene;
+
     private void Awake()
     {
         bgmAddVoiceButton.onClick.AddListener(() =>
@@ -61,6 +64,12 @@ public class SettingUI :BasePanel
     {
         base.Show();
         UpdateVisual();
+    }
+
+    override public void Hide() 
+    {
+        base.Hide();
+        startScene.SetSelectedButton();
     }
 
     private void UpdateVisual()

@@ -1,8 +1,10 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class DifficultyChangeUI : MonoBehaviour
 {
@@ -19,6 +21,17 @@ public class DifficultyChangeUI : MonoBehaviour
 
     [Header("开始界面按钮父物体")]
     [SerializeField] private GameObject startButtons;
+
+    [Header("回退按钮")]
+    [SerializeField] private InputActionReference cancleInput;
+
+    private void Update()
+    {
+        if (cancleInput.action.WasPressedThisFrame())
+        {
+            Hide();
+        }
+    }
 
 
     private void Start()
@@ -74,6 +87,9 @@ public class DifficultyChangeUI : MonoBehaviour
                 transform.DOScale(new Vector3(transScale, transScale, transScale), 0.4f)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1,LoopType.Yoyo);
+
+                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current.SetSelectedGameObject(normalButton.gameObject);
             });
 
         startButtons.gameObject.SetActive(false);
@@ -96,5 +112,15 @@ public class DifficultyChangeUI : MonoBehaviour
         gameObject.SetActive(false);
 
         mainStartScene.LoadBattleScene();
+    }
+
+    private void OnDisable()
+    {
+        cancleInput.action.Disable();
+    }
+
+    private void OnEnable()
+    {
+        cancleInput.action.Enable();
     }
 }
