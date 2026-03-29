@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class DifficultyChangeUI : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class DifficultyChangeUI : MonoBehaviour
     private StartScene mainStartScene;
 
     [Header("开始界面按钮父物体")]
-    [SerializeField] private GameObject Buttons;
+    [SerializeField] private GameObject startButtons;
 
 
     private void Start()
@@ -48,8 +49,9 @@ public class DifficultyChangeUI : MonoBehaviour
         }); 
         exitButton.onClick.AddListener(() =>
         {
-            gameObject.SetActive(false);
-            Buttons.SetActive(true);
+            //gameObject.SetActive(false);
+            //startButtons.SetActive(true);
+            Hide();
         });
 
         gameObject.SetActive(false);
@@ -59,7 +61,32 @@ public class DifficultyChangeUI : MonoBehaviour
     {
         mainStartScene = startScene; 
         gameObject.SetActive(true);
-        Buttons.SetActive(false);
+
+        float transScale = 1.02f;
+
+        transform.DOKill();
+
+        //出现动画
+        transform.localScale = Vector3.zero;
+        transform.DOScale(Vector3.one,0.6f).SetEase(Ease.OutBack)
+            .OnComplete(() => 
+            {
+                transform.DOScale(new Vector3(transScale, transScale, transScale), 0.4f)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1,LoopType.Yoyo);
+            });
+
+        startButtons.gameObject.SetActive(false);
+    }
+
+    public void Hide() 
+    {
+        startButtons.gameObject.SetActive(true);
+
+        mainStartScene.ShowStartSceneButtons(false);
+
+        gameObject.SetActive(false);
+
     }
 
     private void SelectDifficulty(GameModeManager.Difficulty diff)

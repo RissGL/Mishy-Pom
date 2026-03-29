@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingUI : MonoBehaviour
+public class SettingUI :BasePanel
 {
     [Header("°´Å¥ÅäÖÃ")]
     [SerializeField] private Button bgmAddVoiceButton;
@@ -16,6 +16,8 @@ public class SettingUI : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI bgmVolume;
     [SerializeField] private TextMeshProUGUI sfxVolume;
+
+    [SerializeField] private BasePanel basePanel;
 
     private void Awake()
     {
@@ -41,20 +43,24 @@ public class SettingUI : MonoBehaviour
         });
         ExitButton.onClick.AddListener(() => 
         {
-            gameObject.SetActive(false);
+            Hide();
         } );
+
     }
 
     private void Start()
     {
         UpdateVisual();
-        gameObject.SetActive(false); 
+        if (basePanel == null)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
-    public void Show() 
+    public override void Show() 
     {
+        base.Show();
         UpdateVisual();
-        gameObject.SetActive(true);
     }
 
     private void UpdateVisual()

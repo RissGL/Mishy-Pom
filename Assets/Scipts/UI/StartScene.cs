@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,10 @@ public class StartScene : MonoBehaviour
     [SerializeField] private Button singleButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private Button settingButton;
+
+
+    [Header("°´Å¥¸¸½Úµã")]
+    [SerializeField] private Transform startSceneButtons;
 
     [Header("UI")]
     [SerializeField] private GameObject backGround;
@@ -46,6 +51,8 @@ public class StartScene : MonoBehaviour
             settingUI.Show();
         });
         exitButton.onClick.AddListener(() => { Application.Quit(); });
+
+        ShowStartSceneButtons();
     }
 
     private void StartButton_OnClick(GameModeManager.GameMode mode)
@@ -81,5 +88,27 @@ public class StartScene : MonoBehaviour
         }
         slider.gameObject.SetActive(false);
         Destroy(gameObject);
+    }
+
+    public void ShowStartSceneButtons(bool withDelay=true) 
+    {
+        startSceneButtons.transform.DOKill();
+
+        startSceneButtons.transform.localScale = Vector3.zero;
+
+        float delayTime = withDelay ? 0.4f : 0f;
+
+            startSceneButtons.transform.DOScale
+            (Vector3.one, 0.6f)
+            .SetEase(Ease.OutBack).SetDelay(delayTime)
+            .OnComplete(() => 
+            {
+               startSceneButtons.DOScale
+           (new Vector3(1.02f, 1.02f, 1.02f), 0.4f)
+           .SetEase(Ease.InOutSine)
+           .SetLoops(-1, LoopType.Yoyo);
+            });
+        
+       
     }
 }
