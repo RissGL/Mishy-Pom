@@ -38,14 +38,14 @@ MonoBehaviour:
     chanceUpPerHalfMin: 2.5
     maxPushUpChance: 20
   - difficultyLevel: 4
-    thinkTime: 0.25
-    moveTime: 0.13
+    thinkTime: 0.23
+    moveTime: 0.1
     basePushUpChance: 7.5
     chanceUpPerHalfMin: 2.5
     maxPushUpChance: 25
   - difficultyLevel: 5
-    thinkTime: 0.08
+    thinkTime: 0.07
     moveTime: 0.07
     basePushUpChance: 10
-    chanceUpPerHalfMin: 3
-    maxPushUpChance: 25
+    chanceUpPerHalfMin: 2.5
+    maxPushUpChance: 30
