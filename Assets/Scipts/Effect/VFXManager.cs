@@ -8,6 +8,7 @@ public class VEFManager : MonoBehaviour
     [SerializeField] private PlayerBoard board;
     [SerializeField] private FloatingScoreText floatingScoreVfx;
 
+
     private void Awake()
     {
         board.scoreSystem.OnAddScore += ScoreSystem_OnAddScore;
@@ -34,7 +35,6 @@ public class VEFManager : MonoBehaviour
         FloatingScoreText floatingScoreText = Instantiate(floatingScoreVfx, e, Quaternion.identity);
         floatingScoreText.BadMishyScoreSetUp();
         HitStopManager.Instance.TriggerHitStop(0.05f);
-   
     }
 
     private void OnDestroy()
@@ -52,6 +52,7 @@ public class VEFManager : MonoBehaviour
         {
             FloatingScoreText floatingScoreText = Instantiate(floatingScoreVfx, e.centerPos, Quaternion.identity);
             floatingScoreText.SetUp(e.comboCount, e.comboAddedScore);
+
         }
     }
 }

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BasePanel : MonoBehaviour
@@ -14,6 +17,21 @@ public abstract class BasePanel : MonoBehaviour
     [Header("动画持续时间")]
     [SerializeField] protected float animDuration = 0.2f;
 
+    [SerializeField] protected GameObject firstSelectedButton;
+
+    public static event EventHandler OnPanelShow;
+    public static event EventHandler OnPanelHide;
+
+    [SerializeField] private InputActionReference cancleInput;
+
+    private void Update()
+    {
+        if(cancleInput!=null&& cancleInput.action.WasPressedThisFrame())
+        {
+            Hide();
+        }
+    }
+
     public virtual void Show()
     {
         gameObject.SetActive(true);
@@ -23,13 +41,26 @@ public abstract class BasePanel : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence();
 
-        sequence.Append( transform.DOScaleX(1f,animDuration*0.5f).SetEase(Ease.OutQuad).SetUpdate(true)).SetUpdate(true);
-        sequence.Append( transform.DOScaleY(1f, animDuration).SetEase(Ease.OutBack).SetUpdate(true)).SetUpdate(true);
+        OnPanelShow?.Invoke(this, EventArgs.Empty);
+
+        sequence.Append( transform.DOScaleX(1f,animDuration*0.5f)
+            .SetEase(Ease.OutQuad).SetUpdate(true)).SetUpdate(true);
+        sequence.Append( transform.DOScaleY(1f, animDuration)
+            .SetEase(Ease.OutBack).SetUpdate(true)).SetUpdate(true);
+
+        if (firstSelectedButton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        }
     }
+
 
     public virtual void Hide()
     {
         Sequence sequence = DOTween.Sequence();
+
+        OnPanelHide?.Invoke(this, EventArgs.Empty);
         sequence.Append(transform.DOScaleY(0.007f, animDuration * 0.5f).SetEase(Ease.InCubic).SetUpdate(true)).SetUpdate(true);
         sequence.Append(transform.DOScaleX(0f, animDuration*0.4f).SetEase(Ease.InExpo).SetUpdate(true).SetUpdate(true));
         sequence.OnComplete(() =>
@@ -43,5 +74,12 @@ public abstract class BasePanel : MonoBehaviour
     {
         transform.DOKill();
          transform.localScale = originalScale;
+        cancleInput.action.Disable();
+    }
+
+
+    private void OnEnable()
+    {
+        cancleInput.action.Enable();
     }
 }

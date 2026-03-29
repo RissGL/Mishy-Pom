@@ -68,6 +68,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cancle/Back",
+                    "type": "Button",
+                    "id": "e8c60a17-1d44-4750-92fe-d4fbd651d5a0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -205,6 +214,17 @@
                 },
                 {
                     "name": "",
+                    "id": "57f61cde-aa64-47e5-b96a-f0fee9152e7c",
+                    "path": "<XInputController>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FastFall",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "76cea175-eeb3-4817-ad73-faf3adaea156",
                     "path": "<Keyboard>/j",
                     "interactions": "",
@@ -266,6 +286,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cf3a2ab4-232a-4c78-9375-f9bf7ce4d9b8",
+                    "path": "<XInputController>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancle/Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1f913f05-d4cf-4484-bfa6-8adcf880f166",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancle/Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

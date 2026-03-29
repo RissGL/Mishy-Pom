@@ -39,6 +39,12 @@ public class PauseUI : BasePanel
 
     public void Show(float playTime) 
     {
+        if (PlayerManager.CurrentState == PlayerManager.GameState.GameOver)
+        {
+            Debug.LogWarning("游戏已经结束");
+            return;
+        }
+
         settingUI.gameObject.SetActive(true);
         gamePlayerTime.text = "Play Time: " + $"<size=130%><gradient=Green>" +
     $"{(Mathf.RoundToInt(playTime).ToString())}" + " </size></gradient>s";
