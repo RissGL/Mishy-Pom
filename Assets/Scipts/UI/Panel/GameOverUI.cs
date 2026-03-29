@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
-public class GameOverUI : MonoBehaviour
+public class GameOverUI : BasePanel
 {
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private Button reStartButton;
@@ -14,7 +14,6 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gamePlayerTime;
 
     [SerializeField] private Image sliderImage;
-    [SerializeField] private Image blackBg;
     [SerializeField] private GameObject slider;
 
 
@@ -40,11 +39,13 @@ public class GameOverUI : MonoBehaviour
 
         gameObject.SetActive(true);
         slider.gameObject.SetActive(false);
+
+        base.Show();
     }
 
     public void Hide() 
     {
-        gameObject.SetActive(false);
+        base.Hide();
     }
 
     private IEnumerator LoadSceneAsync(string sceneName)
@@ -57,7 +58,6 @@ public class GameOverUI : MonoBehaviour
         reStartButton.gameObject.SetActive(false);
         endButton.gameObject.SetActive(false);
         sliderImage.fillAmount = 0;
-        blackBg.gameObject.SetActive(true);
 
         while (!ac.isDone)
         {

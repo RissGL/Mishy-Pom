@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
-public class PauseUI : MonoBehaviour
+public class PauseUI : BasePanel
 {
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private Button reStartButton;
@@ -14,9 +14,10 @@ public class PauseUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gamePlayerTime;
 
     [SerializeField] private Image sliderImage;
-    [SerializeField] private Image blackBg;
     [SerializeField] private GameObject slider;
 
+    [Header("设置菜单")]
+    [SerializeField] private SettingUI settingUI;
 
     private void Start()
     {
@@ -31,21 +32,27 @@ public class PauseUI : MonoBehaviour
             StartCoroutine(LoadSceneAsync(SceneName.START_SCENE));
             Time.timeScale = 1f;//恢复时间
         });
-        Hide();
+        settingUI.gameObject.SetActive(false);
+        gameObject.SetActive(false);
         slider.gameObject.SetActive(false);
     }
 
     public void Show(float playTime) 
     {
+        settingUI.gameObject.SetActive(true);
         gamePlayerTime.text = "Play Time: " + $"<size=130%><gradient=Green>" +
     $"{(Mathf.RoundToInt(playTime).ToString())}" + " </size></gradient>s";
         gameObject.SetActive(true);
         slider.gameObject.SetActive(false);
+ 
+        base.Show();
+        settingUI.Show();
     }
 
     public void Hide() 
     {
-        gameObject.SetActive(false);
+        settingUI.gameObject.SetActive(false);
+        base.Hide();
     }
 
     private IEnumerator LoadSceneAsync(string sceneName)
@@ -58,7 +65,6 @@ public class PauseUI : MonoBehaviour
         reStartButton.gameObject.SetActive(false);
         endButton.gameObject.SetActive(false);
         sliderImage.fillAmount = 0;
-        blackBg.gameObject.SetActive(true);
 
         while (!ac.isDone)
         {

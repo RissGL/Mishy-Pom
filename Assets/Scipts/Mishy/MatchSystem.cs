@@ -214,7 +214,7 @@ board.gridManager.GetHeight()];
             {
                 OnMatchCleared?.Invoke(this, new MatchInfo(matches.Count,currentCombo,GetMatchCenter(matches)));
 
-                CameraShakeManager.instance.ShakeMedium();
+                //CameraShakeManager.instance.ShakeMedium();
 
                 // 销毁并清理网格
                 foreach (Mishy m in matches)
