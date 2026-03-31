@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // 必须引入 UI
+using UnityEngine.Pool; // 引入对象池命名空间
 
 public class MishyPreviewQueueUI : MonoBehaviour
 {
@@ -16,14 +17,39 @@ public class MishyPreviewQueueUI : MonoBehaviour
     [SerializeField] private float animDuration = 0.3f;  // 动画时长
     [SerializeField] private float spriteSize = 100f;
 
-
     // 记录当前屏幕上活着的 UI 节点
     private List<GameObject> activeUINodes = new List<GameObject>();
 
     [SerializeField] private GameObject uiMishyPrefab;
 
+    // 声明对象池
+    private IObjectPool<GameObject> uiNodePool;
+
     private void Awake()
     {
+        // 初始化对象池
+        uiNodePool = new ObjectPool<GameObject>(
+            createFunc: () => Instantiate(uiMishyPrefab, container),
+            actionOnGet: (obj) =>
+            {
+                obj.SetActive(true);
+                // 恢复透明度（防止被上一次动画设置为透明或半透明）
+                CanvasGroup cg = obj.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+            },
+            actionOnRelease: (obj) =>
+            {
+                obj.SetActive(false);
+            },
+            actionOnDestroy: (obj) =>
+            {
+                Destroy(obj);
+            },
+            collectionCheck: false,
+            defaultCapacity: 10,
+            maxSize: 30
+        );
+
         board.previewQueue.OnNextMishyNeedSpawn += PreviewQueue_OnNextMishyNeedSpawn;
         board.previewQueue.OnNextMishyEequeue += PreviewQueue_OnNextMishyDequeue;
         board.previewQueue.OnPreviewQueueInit += PreviewQueue_OnPreviewQueueInit;
@@ -40,7 +66,8 @@ public class MishyPreviewQueueUI : MonoBehaviour
     {
         foreach (var node in activeUINodes)
         {
-            if (node != null) Destroy(node);
+            // 【关键】替换 Destroy 为归还对象池
+            if (node != null) uiNodePool.Release(node);
         }
         activeUINodes.Clear();
 
@@ -97,7 +124,8 @@ public class MishyPreviewQueueUI : MonoBehaviour
 
     private GameObject SpawnPureUINode(MishyType type)
     {
-        GameObject uiNode = Instantiate(uiMishyPrefab, container);
+        // 【关键】从对象池获取，而不是 Instantiate
+        GameObject uiNode = uiNodePool.Get();
         uiNode.name = "UIPreview_" + type.ToString();
 
         Image img = uiNode.GetComponent<Image>();
@@ -130,13 +158,13 @@ public class MishyPreviewQueueUI : MonoBehaviour
             float easeT = 1f - Mathf.Pow(1f - t, 3f); // 让动画起步快，结尾柔和
 
             rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, easeT);
-            cg.alpha = Mathf.Lerp(1f, 0f, t*2); // 透明度 255 -> 0 (在 CanvasGroup 里是 1 -> 0)
+            cg.alpha = Mathf.Lerp(1f, 0f, t * 2); // 透明度 255 -> 0 (在 CanvasGroup 里是 1 -> 0)
 
             yield return null;
         }
 
-        // 动画播完后彻底销毁
-        Destroy(node);
+        // 【关键】动画播完后归还给对象池，彻底替换 Destroy
+        uiNodePool.Release(node);
     }
 
     private IEnumerator AnimateShiftRoutine(GameObject node, Vector2 targetPos)

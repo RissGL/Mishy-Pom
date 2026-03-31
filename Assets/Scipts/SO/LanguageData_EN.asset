@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 304770394d9050c43a8b963b094e6219, type: 3}
+  m_Name: LanguageData_EN
+  m_EditorClassIdentifier: 
+  languageFont: {fileID: 11400000, guid: ab3be0d755ce5da449e72e86e2f0ca0e, type: 2}
+  languageType: 1
+  translations:
+  - key: UI_MODE_PVE
+    value: Vs CPU
+  - key: UI_MODE_PVP
+    value: Vs Player
+  - key: UI_MODE_SOLO
+    value: Single Player
+  - key: UI_SETTINGS
+    value: Settings
+  - key: UI_CONTROLS
+    value: How to Play
+  - key: UI_QUIT_GAME
+    value: Quit Game
+  - key: UI_DIFF_VERY_EASY
+    value: Very Easy
+  - key: UI_DIFF_EASY
+    value: Easy
+  - key: UI_DIFF_NORMAL
+    value: Normal
+  - key: UI_DIFF_HARD
+    value: Hard
+  - key: UI_DIFF_NIGHTMARE
+    value: Nightmare
+  - key: UI_DIFF_ABYSS
+    value: Abyss
+  - key: PLAYER1
+    value: 'A/D: Move | W: Swap | S: Fast Drop | J/K: Skill (Push/Clear)'
+  - key: PLAYER2
+    value: "\u2190/\u2192: Move | \u2191: Swap | \u2193: Fast Drop | 1/2: Skill (Push/Clear)"

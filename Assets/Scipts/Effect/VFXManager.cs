@@ -23,6 +23,7 @@ public class VEFManager : MonoBehaviour
         {
             CameraShakeManager.instance.ShakeMedium();
             HitStopManager.Instance.TriggerHitStop(0f);
+
         }
         else 
         {
@@ -52,7 +53,6 @@ public class VEFManager : MonoBehaviour
         {
             FloatingScoreText floatingScoreText = Instantiate(floatingScoreVfx, e.centerPos, Quaternion.identity);
             floatingScoreText.SetUp(e.comboCount, e.comboAddedScore);
-
         }
     }
 }

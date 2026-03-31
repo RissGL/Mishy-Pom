@@ -379,6 +379,7 @@ GameObject:
   - component: {fileID: 5407064489596844860}
   - component: {fileID: 4501184384429963428}
   - component: {fileID: 59170506574966330}
+  - component: {fileID: 5665792797862553398}
   m_Layer: 0
   m_Name: PlayerBoard
   m_TagString: Untagged
@@ -554,6 +555,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5665792797862553398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8146535666552711380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fbca870bee14442bcc8cf1a0b65ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8440858518804118130
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,7 +657,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 5407064489596844860}
   floatingScoreVfx: {fileID: 4477013349415792755, guid: 3ac770292262a1747b585f2a77caa525, type: 3}
-  shockwavePrefab: {fileID: 754042262119073670, guid: 4bf13fc41e97d8d48aa6f7909df63d6b, type: 3}
 --- !u!1 &8512764350574427671
 GameObject:
   m_ObjectHideFlags: 0

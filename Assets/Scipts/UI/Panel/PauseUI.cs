@@ -16,11 +16,43 @@ public class PauseUI : BasePanel
     [SerializeField] private Image sliderImage;
     [SerializeField] private GameObject slider;
 
-    [Header("设置菜单")]
-    [SerializeField] private SettingUI settingUI;
+    [SerializeField] private GameObject Setting;
+
+    [Header("按钮配置")]
+    [SerializeField] private Button bgmAddVoiceButton;
+    [SerializeField] private Button bgmReduceVoiceButton;
+    [SerializeField] private Button sfxAddVoiceButton;
+    [SerializeField] private Button sfxReduceVoiceButton;
+
+
+    [SerializeField] private TextMeshProUGUI bgmVolume;
+    [SerializeField] private TextMeshProUGUI sfxVolume;
 
     private void Start()
     {
+
+        bgmAddVoiceButton.onClick.AddListener(() =>
+        {
+            BGMManager.Instance.AddVolume(0.1f);
+            UpdateVisual();
+        });
+        bgmReduceVoiceButton.onClick.AddListener(() =>
+        {
+            BGMManager.Instance.AddVolume(-0.1f);
+            UpdateVisual();
+        });
+        sfxAddVoiceButton.onClick.AddListener(() =>
+        {
+            SFXConfig.AddVoice();
+            UpdateVisual();
+        });
+        sfxReduceVoiceButton.onClick.AddListener(() =>
+        {
+            SFXConfig.ReduceVoice();
+            UpdateVisual();
+        });
+
+
         reStartButton.onClick.AddListener(() => 
         {
             StartCoroutine(LoadSceneAsync(SceneName.BATTLE_GAME_SCENE));
@@ -32,9 +64,10 @@ public class PauseUI : BasePanel
             StartCoroutine(LoadSceneAsync(SceneName.START_SCENE));
             Time.timeScale = 1f;//恢复时间
         });
-        settingUI.gameObject.SetActive(false);
         gameObject.SetActive(false);
         slider.gameObject.SetActive(false);
+        UpdateVisual();
+
     }
 
     public void Show(float playTime) 
@@ -45,19 +78,20 @@ public class PauseUI : BasePanel
             return;
         }
 
-        settingUI.gameObject.SetActive(true);
         gamePlayerTime.text = "Play Time: " + $"<size=130%><gradient=Green>" +
     $"{(Mathf.RoundToInt(playTime).ToString())}" + " </size></gradient>s";
         gameObject.SetActive(true);
         slider.gameObject.SetActive(false);
- 
+        Setting.SetActive(true);
+
+
         base.Show();
-        settingUI.Show();
+        UpdateVisual();
     }
 
     public void Hide() 
     {
-        settingUI.gameObject.SetActive(false);
+        Setting.SetActive(false);
         base.Hide();
     }
 
@@ -79,5 +113,11 @@ public class PauseUI : BasePanel
         }
 
         Destroy(gameObject);
+    }
+
+    private void UpdateVisual()
+    {
+        bgmVolume.text = Mathf.RoundToInt((BGMManager.Instance.GetVolume() * 10)).ToString();
+        sfxVolume.text = Mathf.RoundToInt(SFXConfig.sfxVolume * 10).ToString();
     }
 }

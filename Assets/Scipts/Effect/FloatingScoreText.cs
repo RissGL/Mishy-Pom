@@ -2,21 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Pool; 
 
 public class FloatingScoreText : MonoBehaviour
 {
     [SerializeField] private TextMeshPro scoreText;
     private float moveSpeed = 2.0f;
-    private float disappearTimer=0.8f;
+    private float disappearTimer = 0.8f;
     private Color color;
 
-    public void SetUp(int comboNum,int score) 
+    private IObjectPool<FloatingScoreText> objectPool;
+
+    public void SetPool(IObjectPool<FloatingScoreText> pool)
     {
+        objectPool = pool;
+    }
+
+    public void SetUp(int comboNum, int score)
+    {
+        disappearTimer = 0.8f;
+
+        color = scoreText.color;
+        color.a = 1f;
+        scoreText.color = color;
+
         //scoreText.text = comboNum.ToString()+"Combo\n" +"+"+score.ToString()+"Score";
         scoreText.richText = true;
-        scoreText.text = FormatScoreText( comboNum, score);
+        scoreText.text = FormatScoreText(comboNum, score);
 
-        color =scoreText.color;
         transform.position -= (5 * Vector3.forward);
 
         StartCoroutine(BounceRoutine());
@@ -41,10 +54,15 @@ public class FloatingScoreText : MonoBehaviour
 
     public void BadMishyScoreSetUp()
     {
-        scoreText.text = $"+<size=150%><gradient=GoldGradient>{100} </gradient></size>Score";
+        disappearTimer = 0.8f;
 
         color = scoreText.color;
-        transform.position -= (5*Vector3.forward);
+        color.a = 1f;
+        scoreText.color = color;
+
+        scoreText.text = $"+<size=150%><gradient=GoldGradient>{100} </gradient></size>Score";
+
+        transform.position -= (5 * Vector3.forward);
 
         StartCoroutine(BounceRoutine());
     }
@@ -53,30 +71,37 @@ public class FloatingScoreText : MonoBehaviour
     {
         transform.position += Vector3.up * moveSpeed * Time.deltaTime;
 
-        disappearTimer-= Time.deltaTime;
+        disappearTimer -= Time.deltaTime;
 
-        if (disappearTimer < 0) 
+        if (disappearTimer < 0)
         {
             float fadeTimer = 3f;
 
-            color.a-=fadeTimer* Time.deltaTime;
-            scoreText.color=color;
+            color.a -= fadeTimer * Time.deltaTime;
+            scoreText.color = color;
 
             if (color.a < 0)
             {
-                Destroy(gameObject);
+                if (objectPool != null)
+                {
+                    objectPool.Release(this);
+                }
+                else
+                {
+                    Destroy(gameObject);
+                }
             }
         }
     }
 
     private IEnumerator BounceRoutine()
     {
-        float bounceTime = 0.15f; 
-        float maxScale = 1.6f;    
+        float bounceTime = 0.15f;
+        float maxScale = 1.6f;
 
-        float startAngle = 20f;      
-        float overshootAngle = -10f; 
-        float endAngle = 0f;         
+        float startAngle = 20f;
+        float overshootAngle = -10f;
+        float endAngle = 0f;
 
         transform.localScale = Vector3.zero;
         transform.localRotation = Quaternion.Euler(0, 0, startAngle);
