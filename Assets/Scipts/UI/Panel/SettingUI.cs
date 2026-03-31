@@ -14,6 +14,11 @@ public class SettingUI :BasePanel
 
     [SerializeField] private Button ExitButton;
 
+    [SerializeField] private Button ChineseButton;
+    [SerializeField] private Button EnglishButton;
+    [SerializeField] private Button JapaneseButton;
+
+
     [SerializeField] private TextMeshProUGUI bgmVolume;
     [SerializeField] private TextMeshProUGUI sfxVolume;
 
@@ -48,6 +53,20 @@ public class SettingUI :BasePanel
         {
             Hide();
         } );
+
+
+        ChineseButton.onClick.AddListener(() =>
+        {
+            LocalizationManager.Instance.SetLanguage(LanguageDataSO.LanguageType.Chinese);
+        });
+        EnglishButton.onClick.AddListener(() => 
+        {
+            LocalizationManager.Instance.SetLanguage(LanguageDataSO.LanguageType.English);
+        });
+        JapaneseButton.onClick.AddListener(() =>
+        {
+            LocalizationManager.Instance.SetLanguage(LanguageDataSO.LanguageType.Japanese);
+        });
 
     }
 

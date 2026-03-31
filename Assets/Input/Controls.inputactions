@@ -181,6 +181,17 @@
                 },
                 {
                     "name": "",
+                    "id": "335e0a34-9858-420f-b199-39e819b9fd7e",
+                    "path": "<XInputController>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Swap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a46625af-d117-493a-bcea-bd4332c3fed6",
                     "path": "<Keyboard>/s",
                     "interactions": "",
@@ -214,17 +225,6 @@
                 },
                 {
                     "name": "",
-                    "id": "57f61cde-aa64-47e5-b96a-f0fee9152e7c",
-                    "path": "<XInputController>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "FastFall",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "76cea175-eeb3-4817-ad73-faf3adaea156",
                     "path": "<Keyboard>/j",
                     "interactions": "",
@@ -237,7 +237,7 @@
                 {
                     "name": "",
                     "id": "9c62bd77-8c5e-40d2-aa98-21d85469f582",
-                    "path": "<XInputController>/leftStick/up",
+                    "path": "<XInputController>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

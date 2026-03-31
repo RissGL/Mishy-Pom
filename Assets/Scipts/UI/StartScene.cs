@@ -15,6 +15,7 @@ public class StartScene : MonoBehaviour
     [SerializeField] private Button singleButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private Button settingButton;
+    [SerializeField] private Button turiouristPanelButton;
 
 
     [Header("°´Å¥¸¸½Úµã")]
@@ -27,6 +28,7 @@ public class StartScene : MonoBehaviour
 
     [SerializeField] private DifficultyChangeUI difficultyChangeUI;
     [SerializeField] private SettingUI settingUI;
+    [SerializeField] private TuriouristPanel turiouristPanel;
 
 
     private void Awake()
@@ -50,6 +52,11 @@ public class StartScene : MonoBehaviour
         settingButton.onClick.AddListener(() => 
         {
             settingUI.Show();
+        });
+
+        turiouristPanelButton.onClick.AddListener(() => 
+        {
+            turiouristPanel.Show();
         });
         exitButton.onClick.AddListener(() => { Application.Quit(); });
 
@@ -81,6 +88,7 @@ public class StartScene : MonoBehaviour
         settingButton.gameObject.SetActive(false);
         sliderImage.fillAmount = 0;
         exitButton.gameObject.SetActive(false);
+        turiouristPanelButton.gameObject.SetActive(false);
 
         while (!ac.isDone)
         {
@@ -98,8 +106,9 @@ public class StartScene : MonoBehaviour
         startSceneButtons.transform.localScale = Vector3.zero;
 
         float delayTime = withDelay ? 0.4f : 0f;
+        startSceneButtons.DOKill();
 
-            startSceneButtons.transform.DOScale
+        startSceneButtons.transform.DOScale
             (Vector3.one, 0.6f)
             .SetEase(Ease.OutBack).SetDelay(delayTime)
             .OnComplete(() => 

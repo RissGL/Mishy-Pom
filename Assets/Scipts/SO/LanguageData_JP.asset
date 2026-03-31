@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 304770394d9050c43a8b963b094e6219, type: 3}
+  m_Name: LanguageData_JP
+  m_EditorClassIdentifier: 
+  languageFont: {fileID: 11400000, guid: 3886a4b3b66b1c4489bc8c0c46b7f097, type: 2}
+  languageType: 2
+  translations:
+  - key: UI_MODE_PVE
+    value: "CPU\u5BFE\u6226"
+  - key: UI_MODE_PVP
+    value: "2\u4EBA\u5BFE\u6226"
+  - key: UI_MODE_SOLO
+    value: "\u30B7\u30F3\u30B0\u30EB\u30D7\u30EC\u30A4"
+  - key: UI_SETTINGS
+    value: "\u8A2D\u5B9A"
+  - key: UI_CONTROLS
+    value: "\u904A\u3073\u65B9"
+  - key: UI_QUIT_GAME
+    value: "\u30B2\u30FC\u30E0\u7D42\u4E86"
+  - key: UI_DIFF_VERY_EASY
+    value: "\u30D9\u30EA\u30FC\u30A4\u30FC\u30B8\u30FC"
+  - key: UI_DIFF_EASY
+    value: "\u30A4\u30FC\u30B8\u30FC"
+  - key: UI_DIFF_NORMAL
+    value: "\u30CE\u30FC\u30DE\u30EB"
+  - key: UI_DIFF_HARD
+    value: "\u30CF\u30FC\u30C9"
+  - key: UI_DIFF_NIGHTMARE
+    value: "\u30CA\u30A4\u30C8\u30E1\u30A2"
+  - key: UI_DIFF_ABYSS
+    value: "\u30A2\u30D3\u30B9"
+  - key: PLAYER1
+    value: "\u5DE6\u53F3\u79FB\u52D5 | W\uFF1A\u4E0A\u4E0B\u5165\u66FF | S\uFF1A\u9AD8\u901F\u843D\u4E0B
+      | J/K\uFF1A\u30B9\u30AD\u30EB\uFF08\u30D7\u30C3\u30B7\u30E5/\u6D88\u53BB\uFF09"
+  - key: PLAYER2
+    value: "\u2190/\u2192\uFF1A\u5DE6\u53F3\u79FB\u52D5 | \u2191\uFF1A\u4E0A\u4E0B\u5165\u66FF
+      | \u2193\uFF1A\u9AD8\u901F\u843D\u4E0B | 1/2\uFF1A\u30B9\u30AD\u30EB\uFF08\u30D7\u30C3\u30B7\u30E5/\u6D88\u53BB\uFF09"
