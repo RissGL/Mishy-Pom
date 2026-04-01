@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 304770394d9050c43a8b963b094e6219, type: 3}
   m_Name: LanguageData_EN
   m_EditorClassIdentifier: 
-  languageFont: {fileID: 11400000, guid: ab3be0d755ce5da449e72e86e2f0ca0e, type: 2}
+  languageFont: {fileID: 11400000, guid: 361751d68772245498d245fcdb79d997, type: 2}
   languageType: 1
   translations:
   - key: UI_MODE_PVE
